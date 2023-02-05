@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "162393159264",
+    "project_id": "jobai-a1c15",
+    "storage_bucket": "jobai-a1c15.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:162393159264:android:3dc6af9ecf4b532e4bf505",
+        "android_client_info": {
+          "package_name": "com.example.flutter_job_seeking"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "162393159264-6arepql1atuekei9c8ojjgqkd8rar839.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC2syuJN-N_vC3rlt5BH4n8_91LyHCsQSw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "162393159264-6arepql1atuekei9c8ojjgqkd8rar839.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

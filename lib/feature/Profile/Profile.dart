@@ -1,9 +1,42 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_job_seeking/Repository/ProfileRepo.dart';
+import 'package:flutter_job_seeking/feature/Authentication/CreateAccount.dart';
+import 'package:flutter_job_seeking/feature/Authentication/LoginPage.dart';
 
-class Profile extends StatelessWidget {
+class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
+
+  @override
+  State<Profile> createState() => _ProfileState();
+}
+
+class _ProfileState extends State<Profile> {
+
+String name="";
+String pos="";
+
+Future getUserData() async {
+ await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid)
+ .get().then((value) async {
+    if(value.exists){
+      setState(() {
+        name=value.data()!['name'];
+        pos=value.data()!['position'];
+      });
+    }
+ });
+}
+
+@override
+  void initState() {
+    //getUserData();
+    // TODO: implement initState
+    super.initState();
+    getUserData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +60,7 @@ class Profile extends StatelessWidget {
         children: [
           // COLUMN THAT WILL CONTAIN THE PROFILE
           Column(
-            children: const [
+            children: [
               CircleAvatar(
                 radius: 50,
                 backgroundImage: NetworkImage(
@@ -36,50 +69,16 @@ class Profile extends StatelessWidget {
               ),
               SizedBox(height: 10),
               Text(
-                "Rachael Wagner",
+                name,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Text("Junior Product Designer")
+              Text(pos)
             ],
           ),
           const SizedBox(height: 25),
-          // Row(
-          //   children: const [
-          //     Padding(
-          //       padding: EdgeInsets.only(right: 5),
-          //       child: Text(
-          //         "Complete your profile",
-          //         style: TextStyle(
-          //           fontWeight: FontWeight.bold,
-          //         ),
-          //       ),
-          //     ),
-          //     Text(
-          //       "(1/5)",
-          //       style: TextStyle(
-          //         color: Colors.blue,
-          //       ),
-          //     )
-          //   ],
-          // ),
-          // const SizedBox(height: 10),
-          // Row(
-          //   children: List.generate(5, (index) {
-          //     return Expanded(
-          //       child: Container(
-          //         height: 7,
-          //         margin: EdgeInsets.only(right: index == 4 ? 0 : 6),
-          //         decoration: BoxDecoration(
-          //           borderRadius: BorderRadius.circular(10),
-          //           color: index == 0 ? Colors.blue : Colors.black12,
-          //         ),
-          //       ),
-          //     );
-          //   }),
-          // ),
           const SizedBox(height: 10),
           SizedBox(
             height: 180,
@@ -102,12 +101,17 @@ class Profile extends StatelessWidget {
                           ),
                           const SizedBox(height: 10),
                           Text(
-                            card.title,
+                            card.title == "Set Your Profile Details" && name!="" ?"Edit Your Profile Details":card.title,
                             textAlign: TextAlign.center,
                           ),
                           const Spacer(),
                           ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              if(card.icon==CupertinoIcons.person_circle){
+                                  Navigator.pushReplacement(
+                                    context, MaterialPageRoute(builder: (BuildContext context) => CreateAccount()));
+                              }
+                            },
                             style: ElevatedButton.styleFrom(
                               elevation: 0,
                               shape: RoundedRectangleBorder(
@@ -137,6 +141,16 @@ class Profile extends StatelessWidget {
                   elevation: 4,
                   shadowColor: Colors.black12,
                   child: ListTile(
+                    onTap: () {
+                      if(tile.icon==CupertinoIcons.arrow_right_arrow_left){
+                        print("working");
+                        FirebaseAuth.instance.signOut();
+                        
+                    Navigator.pushReplacement(
+                        context, MaterialPageRoute(builder: (BuildContext context) => LoginPage()));
+                        //Material
+                      }
+                    },
                     leading: Icon(tile.icon),
                     title: Text(tile.title),
                     trailing: const Icon(Icons.chevron_right),
@@ -147,28 +161,6 @@ class Profile extends StatelessWidget {
           )
         ],
       ),
-      // bottomNavigationBar: BottomNavigationBar(
-      //   currentIndex: 3,
-      //   type: BottomNavigationBarType.fixed,
-      //   items: const [
-      //     BottomNavigationBarItem(
-      //       icon: Icon(CupertinoIcons.home),
-      //       label: "Home",
-      //     ),
-      //     BottomNavigationBarItem(
-      //       icon: Icon(CupertinoIcons.chat_bubble_2),
-      //       label: "Messages",
-      //     ),
-      //     BottomNavigationBarItem(
-      //       icon: Icon(CupertinoIcons.book),
-      //       label: "Discover",
-      //     ),
-      //     BottomNavigationBarItem(
-      //       icon: Icon(CupertinoIcons.person),
-      //       label: "Profile",
-      //     ),
-      //   ],
-      // ),
     );
   }
 }
@@ -195,11 +187,11 @@ List<ProfileCompletionCard> profileCompletionCards = [
     icon: CupertinoIcons.doc,
     buttonText: "Upload",
   ),
-  ProfileCompletionCard(
-    title: "Add your skills",
-    icon: CupertinoIcons.square_list,
-    buttonText: "Add",
-  ),
+  // ProfileCompletionCard(
+  //   title: "Add your skills",
+  //   icon: CupertinoIcons.square_list,
+  //   buttonText: "Add",
+  // ),
 ];
 
 class CustomListTile {

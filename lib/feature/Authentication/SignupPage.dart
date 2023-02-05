@@ -1,8 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_job_seeking/Repository/AuthRepo.dart';
 import 'package:flutter_job_seeking/feature/Authentication/LoginPage.dart';
 import 'package:flutter_job_seeking/feature/home_page.dart';
 
 class SignupPage extends StatelessWidget {
+  TextEditingController email=new TextEditingController();
+  TextEditingController pass=new TextEditingController();
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -27,7 +31,7 @@ class SignupPage extends StatelessWidget {
     return Column(
       children: [
         Text(
-          "Welcome Back",
+          "Register! ",
           style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
         ),
         Text("Create an account"),
@@ -40,6 +44,7 @@ class SignupPage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         TextField(
+          controller: email,
           decoration: InputDecoration(
               hintText: "Email",
               border: OutlineInputBorder(
@@ -51,6 +56,7 @@ class SignupPage extends StatelessWidget {
         ),
         SizedBox(height: 10),
         TextField(
+          controller: pass,
           decoration: InputDecoration(
             hintText: "Password",
             border: OutlineInputBorder(
@@ -64,21 +70,28 @@ class SignupPage extends StatelessWidget {
         ),
         SizedBox(height: 10),
         ElevatedButton(
-          onPressed: () {
+          onPressed: () async {
+          bool user= await AuthRepo().emailSignup(email.text, pass.text);
+          if(user==false){
+            print("error");
+          }else{
             Navigator.push(  
               context,  
               MaterialPageRoute(builder: (context) => HomePage()),  
-            );  
+            );
+          }  
           },
           child: Text(
-            "Login",
+            "Signup",
             style: TextStyle(fontSize: 20),
           ),
           style: ElevatedButton.styleFrom(
             shape: StadiumBorder(),
             padding: EdgeInsets.symmetric(vertical: 16),
           ),
-        )
+        ),
+
+        
       ],
     );
   }

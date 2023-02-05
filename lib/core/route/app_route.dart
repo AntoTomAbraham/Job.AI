@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_job_seeking/feature/Authentication/SplashScreen.dart';
 import 'package:flutter_job_seeking/feature/detail_job/presentation/detail_job_screen.dart';
 import 'package:flutter_job_seeking/feature/get_started/presentation/get_started_screen.dart';
 import 'package:flutter_job_seeking/feature/home/presentation/home_screen.dart';
+import 'package:flutter_job_seeking/feature/home_page.dart';
 
 import '/core/route/app_route_name.dart';
 
@@ -29,6 +32,48 @@ class AppRoute {
             );
           },
         );
+
+        case AppRouteName.homeScreen:
+        return PageRouteBuilder(
+          settings: settings,
+          pageBuilder: (_, __, ___) => SplashScreen(),
+          transitionDuration: const Duration(milliseconds: 400),
+          transitionsBuilder: (_, animation, __, child) {
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(1, 0),
+                end: Offset.zero,
+              ).animate(animation),
+              child: child,
+            );
+          },
+        );
+
+case AppRouteName.decide:
+        return PageRouteBuilder(
+          settings: settings,
+          pageBuilder: (_, __, ___) { 
+            FirebaseAuth.instance
+  .authStateChanges().listen((event) {
+    if(event!.uid!=null){
+           
+    }
+    
+  },);
+         return HomeScreen();  
+            },
+          transitionDuration: const Duration(milliseconds: 400),
+          transitionsBuilder: (_, animation, __, child) {
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(1, 0),
+                end: Offset.zero,
+              ).animate(animation),
+              child: child,
+            );
+          },
+        );
+
 
       case AppRouteName.detailJob:
         return PageRouteBuilder(
