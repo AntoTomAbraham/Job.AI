@@ -1,10 +1,17 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_job_seeking/Helper/DialogHelper.dart';
 import 'package:flutter_job_seeking/Repository/ProfileRepo.dart';
 import 'package:flutter_job_seeking/feature/Authentication/CreateAccount.dart';
 import 'package:flutter_job_seeking/feature/Authentication/LoginPage.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -17,7 +24,8 @@ class _ProfileState extends State<Profile> {
 
 String name="";
 String pos="";
-
+String image="https://th.bing.com/th/id/OIP.ZT-Tw8tYy38htqch69vsGQAAAA?pid=ImgDet&rs=1";
+String res="";
 Future getUserData() async {
  await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid)
  .get().then((value) async {
@@ -25,10 +33,41 @@ Future getUserData() async {
       setState(() {
         name=value.data()!['name'];
         pos=value.data()!['position'];
+        image=value.data()!['profile'];
+        res=value.data()!['resume'];
       });
+      print("this is re"+ res);
     }
  });
 }
+
+  File? _image;    
+  String _uploadedFileURL="";   
+
+  Future chooseFile() async {    
+   FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+if (result != null) {
+  _image = File(result.files.single.path as String);
+} else {
+  // User canceled the picker
+}
+   setState(() {});   
+ }
+ String imageUrl="";
+ Future _upload() async {
+  print("upload");
+  print(_image!.path);
+  if(_image!=null){
+    print("uploading image");
+    Reference referenece=FirebaseStorage.instance.ref();
+    Reference referenceDirImage=referenece.child('images');
+    Reference referenceUpload=referenceDirImage.child(_image!.path);
+    await referenceUpload.putFile(File(_image!.path));
+    _uploadedFileURL=await referenceUpload.getDownloadURL();
+    print(_uploadedFileURL);
+   }
+ } 
 
 @override
   void initState() {
@@ -36,13 +75,16 @@ Future getUserData() async {
     // TODO: implement initState
     super.initState();
     getUserData();
+    print(res);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: Icon(Icons.menu),
+        leading: GestureDetector(onTap: (){
+          DialogHelper.hideDialog();
+        },child: Icon(Icons.menu)),
         elevation: 0,
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.black,
@@ -50,7 +92,10 @@ Future getUserData() async {
         centerTitle: true,
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              //DialogHelper.showLoadingDialog();
+              //DialogHelper.showDialog("Image Uploaded Successfully", false);
+              },
             icon: const Icon(Icons.settings_rounded),
           )
         ],
@@ -64,7 +109,7 @@ Future getUserData() async {
               CircleAvatar(
                 radius: 50,
                 backgroundImage: NetworkImage(
-                  "https://images.unsplash.com/photo-1554151228-14d9def656e4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=386&q=80",
+                  image,
                 ),
               ),
               SizedBox(height: 10),
@@ -95,9 +140,22 @@ Future getUserData() async {
                       padding: const EdgeInsets.all(15),
                       child: Column(
                         children: [
-                          Icon(
-                            card.icon,
-                            size: 30,
+                          GestureDetector(
+                            onTap: () async {
+                              try {
+                                 if (await canLaunchUrl(Uri.parse(res))) {
+                                await launchUrl(Uri.parse(res));
+                              }                          
+                              } catch (e) {
+                               print(e); 
+                              }
+                                    // Navigator.pushReplacement(
+                              //       context, MaterialPageRoute(builder: (BuildContext context) => Web(url: res)));
+                            },
+                            child: Icon(
+                              card.icon,
+                              size: 30,
+                            ),
                           ),
                           const SizedBox(height: 10),
                           Text(
@@ -106,10 +164,15 @@ Future getUserData() async {
                           ),
                           const Spacer(),
                           ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async{
                               if(card.icon==CupertinoIcons.person_circle){
                                   Navigator.pushReplacement(
                                     context, MaterialPageRoute(builder: (BuildContext context) => CreateAccount()));
+                              }else if(card.icon==CupertinoIcons.doc){
+                                await chooseFile();
+                                await _upload();
+                                await ProfileRepo().uploadResume(resume: _uploadedFileURL);
+                                DialogHelper.showDialog("Resume Updated", true);
                               }
                             },
                             style: ElevatedButton.styleFrom(

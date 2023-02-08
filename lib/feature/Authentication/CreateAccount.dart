@@ -15,14 +15,14 @@ class CreateAccount extends StatefulWidget {
 }
 
 class _CreateAccountState extends State<CreateAccount> {
-  String _currentSelectedValue="A";
-  String _qua="A";
-  String _exp="A";
+  String _currentSelectedValue="Software Engineer";
+  String _qua="BCA";
+  String _exp="0-1";
   TextEditingController nameController=TextEditingController();
   TextEditingController collegeController=TextEditingController();
-  var _pos=["A","B"];
-  var Qua=["A","B"];
-  var Exp=["A","B"];
+  var _pos=["Software Engineer","Backend Developer","Designer","DBA","Data Scientist"];
+  var Qua=["BCA","BTECH","Self Taught","Arts","Commerce"];
+  var Exp=["0-1","1+","2+","4+","6+"];
   List<String> _myListCustom=[];
   XFile? _image;    
   String _uploadedFileURL="";   
@@ -85,7 +85,7 @@ class _CreateAccountState extends State<CreateAccount> {
                 filled: true,
                 prefixIcon: Icon(Icons.person),
               ),
-              obscureText: true,
+              
             ),
             FormField<String>(
           builder: (FormFieldState<String> state) {
@@ -137,7 +137,7 @@ class _CreateAccountState extends State<CreateAccount> {
                     borderRadius: BorderRadius.circular(18),
                     borderSide: BorderSide.none
                   )),
-              isEmpty: _currentSelectedValue == "",
+              isEmpty: _qua == "",
               child: DropdownButtonHideUnderline(
                 child: DropdownButton(
                   value: _qua,
@@ -148,7 +148,7 @@ class _CreateAccountState extends State<CreateAccount> {
                       state.didChange(newValue);
                     });
                   },
-                  items: _pos.map((String value) {
+                  items: Qua.map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(value),
@@ -173,7 +173,7 @@ class _CreateAccountState extends State<CreateAccount> {
                     borderRadius: BorderRadius.circular(18),
                     borderSide: BorderSide.none
                   )),
-              isEmpty: _currentSelectedValue == "",
+              isEmpty: _exp == "",
               child: DropdownButtonHideUnderline(
                 child: DropdownButton(
                   value: _exp,
@@ -239,7 +239,7 @@ class _CreateAccountState extends State<CreateAccount> {
             TextButton(
               onPressed: () {}, child: GestureDetector(
               onTap:(() {
-                ProfileRepo().CreateProfile(name: "name", qualification: " dsf", college: "dks", experience: 1);
+                ProfileRepo().CreateProfile(pos:_currentSelectedValue,name: nameController.text, qualification: _qua, college: collegeController.text, experience: _exp,image: _uploadedFileURL,skills: _myListCustom);
               Navigator.push(  
                   context,  
                   MaterialPageRoute(builder: (context) => 
