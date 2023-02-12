@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_job_seeking/Repository/JobRepo.dart';
 import 'package:flutter_job_seeking/core/route/app_route_name.dart';
+import 'package:flutter_job_seeking/feature/detail_job/presentation/detail_job_screen.dart';
 import 'package:flutter_job_seeking/feature/home/model/job.dart';
 
 class RecentJobWidget extends StatelessWidget {
@@ -17,11 +19,16 @@ class RecentJobWidget extends StatelessWidget {
       itemBuilder: (context, index) {
         return InkWell(
           onTap: () {
-            Navigator.pushNamed(
-              context,
-              AppRouteName.detailJob,
-              arguments: recentJobs[index],
-            );
+            //JobRepo.addAnalytics(jobID: 'S4VyrnXYe8X9ywM2888b');
+            JobRepo.addInsights(jobID: 'S4VyrnXYe8X9ywM2888b');
+            JobRepo.incrementView(jobID: 'S4VyrnXYe8X9ywM2888b');
+            Navigator.pushReplacement(
+                        context, MaterialPageRoute(builder: (BuildContext context) => DetailJobScreen(jobID: 'S4VyrnXYe8X9ywM2888b') ));
+            // Navigator.pushNamed(
+            //   context,
+            //   AppRouteName.detailJob,
+            //   arguments: recentJobs[index],
+            // );
           },
           child: Container(
             height: 86,

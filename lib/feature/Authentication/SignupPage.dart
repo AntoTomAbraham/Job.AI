@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_job_seeking/Repository/AuthRepo.dart';
+import 'package:flutter_job_seeking/feature/Authentication/CreateAccount.dart';
 import 'package:flutter_job_seeking/feature/Authentication/LoginPage.dart';
 import 'package:flutter_job_seeking/feature/home_page.dart';
 
@@ -77,7 +78,7 @@ class SignupPage extends StatelessWidget {
           }else{
             Navigator.push(  
               context,  
-              MaterialPageRoute(builder: (context) => HomePage()),  
+              MaterialPageRoute(builder: (context) => CreateAccount()),  
             );
           }  
           },

@@ -4,7 +4,9 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chip_tags/flutter_chip_tags.dart';
 import 'package:flutter_job_seeking/Repository/ProfileRepo.dart';
+//import 'package:flutter_job_seeking/feature/Authentication/HRaccountCreation.dart';
 import 'package:flutter_job_seeking/feature/home_page.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 
 class CreateAccount extends StatefulWidget {
@@ -73,6 +75,24 @@ class _CreateAccountState extends State<CreateAccount> {
               style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
             ),
               SizedBox(height: 10),
+              // GestureDetector(onTap: () {
+              //    Navigator.push(  
+              //     context,  
+              //     MaterialPageRoute(builder: (context) => 
+              //     HRAccountCreation())); 
+              // },
+              //   child: Align(alignment: Alignment.bottomLeft,
+              //     child: Container(child: 
+              //     Row(mainAxisAlignment: MainAxisAlignment.start,
+              //       children: [
+              //         Text("Are you a ",
+              //         style: GoogleFonts.poppins(fontWeight: FontWeight.w500),),
+              //         Text("HR Manager ?",
+              //         style: GoogleFonts.poppins(fontWeight: FontWeight.w600,color: Colors.green),),
+              //       ],
+              //     ))),
+              // ),
+              //  SizedBox(height: 5),
                     TextField(
               controller:nameController,
               decoration: InputDecoration(

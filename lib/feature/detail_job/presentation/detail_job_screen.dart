@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -11,7 +13,9 @@ enum _Tab {
 }
 
 class DetailJobScreen extends StatefulWidget {
-  const DetailJobScreen({super.key});
+  String jobID;
+  DetailJobScreen({required this.jobID});
+  //const DetailJobScreen({super.key});
 
   @override
   State<DetailJobScreen> createState() => _DetailJobScreenState();
@@ -19,10 +23,46 @@ class DetailJobScreen extends StatefulWidget {
 
 class _DetailJobScreenState extends State<DetailJobScreen> {
   final selectedTab = ValueNotifier(_Tab.requirement);
+  String jobPosition="";
+  String desc="";
+  String company="";
+  String jobLocation="";
+  String salary="";
+  String workPlaceType="";
+  List<dynamic> req=[];
+  String uid="";
+  Future getJobData() async {
+    print("jobData called");
+    await FirebaseFirestore.instance.collection('Job').doc(widget.jobID)
+    .get().then((value) async {
+      print(value.exists);
+    if(value.exists){
+      setState(() {
+        jobPosition=value.data()!['Jobtitle'];
+        desc=value.data()!['JobDesc'];
+        company=value.data()!['company'];
+        jobLocation=value.data()!['jobLocation'];
+        salary=value.data()!['salary'];
+        workPlaceType=value.data()!['workPlaceType'];
+        req=value.data()!['requirements'];
+        uid=value.data()!['uid'];
+      });
+      print("this is re"+ jobPosition);
+    }
+ });
+  }
+ 
+ 
+ @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getJobData();
+  }
 
   @override
   Widget build(BuildContext context) {
-    Job job = ModalRoute.of(context)?.settings.arguments as Job;
+    //Job job = ModalRoute.of(context)?.settings.arguments as Job;
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -66,20 +106,20 @@ class _DetailJobScreenState extends State<DetailJobScreen> {
                     margin: const EdgeInsets.symmetric(vertical: 16),
                     child: Image(
                       image: AssetImage(
-                        job.companyImage,
+                        "assets/ic_twitter.png",
                       ),
                       width: 96,
                       height: 96,
                     ),
                   ),
                   Text(
-                    job.jobTitle,
+                    jobPosition,
                     style: Theme.of(context).textTheme.headlineSmall,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    job.companyName,
+                    company,
                     style: Theme.of(context).textTheme.bodyMedium,
                     textAlign: TextAlign.center,
                   ),
@@ -104,7 +144,7 @@ class _DetailJobScreenState extends State<DetailJobScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            job.location,
+                            jobLocation,
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium
@@ -130,7 +170,7 @@ class _DetailJobScreenState extends State<DetailJobScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            "\$${job.salary} / month",
+                            "\₹${salary} / annum",
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium
@@ -156,7 +196,7 @@ class _DetailJobScreenState extends State<DetailJobScreen> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            job.jobType,
+                            workPlaceType,
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium
@@ -258,39 +298,63 @@ class _DetailJobScreenState extends State<DetailJobScreen> {
                     valueListenable: selectedTab,
                     builder: (context, value, child) {
                       return value == _Tab.requirement
-                          ? ListView.separated(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: job.requirements.length,
-                              separatorBuilder: (_, __) {
-                                return const SizedBox(height: 10);
-                              },
-                              itemBuilder: (context, index) {
-                                return Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "- ",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyLarge
-                                          ?.copyWith(height: 1.4),
-                                    ),
-                                    Expanded(
-                                      child: Text(
-                                        job.requirements[index],
+                          ? Container(height: 200,
+                            child: ListView(children: req.map((e){
+                              return Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                          Text(
+                                        "- ",
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodyLarge
                                             ?.copyWith(height: 1.4),
                                       ),
-                                    )
-                                  ],
-                                );
-                              },
-                            )
+                                      Expanded(
+                                        child: Text(
+                                          e.toString(),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge
+                                              ?.copyWith(height: 1.4),
+                                        ),
+                                      )
+                              ],);
+                            }).toList(),),
+                          )
+                          // ListView.separated(
+                          //     shrinkWrap: true,
+                          //     physics: const NeverScrollableScrollPhysics(),
+                          //     itemCount: job.requirements.length,
+                          //     separatorBuilder: (_, __) {
+                          //       return const SizedBox(height: 10);
+                          //     },
+                          //     itemBuilder: (context, index) {
+                          //       return Row(
+                          //         crossAxisAlignment: CrossAxisAlignment.start,
+                          //         children: [
+                                    // Text(
+                                    //   "- ",
+                                    //   style: Theme.of(context)
+                                    //       .textTheme
+                                    //       .bodyLarge
+                                    //       ?.copyWith(height: 1.4),
+                                    // ),
+                                    // Expanded(
+                                    //   child: Text(
+                                    //     job.requirements[index],
+                                    //     style: Theme.of(context)
+                                    //         .textTheme
+                                    //         .bodyLarge
+                                    //         ?.copyWith(height: 1.4),
+                                    //   ),
+                                    // )
+                          //         ],
+                          //       );
+                          //     },
+                          //   )
                           : Text(
-                              job.about,
+                              desc,
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyLarge
@@ -301,6 +365,25 @@ class _DetailJobScreenState extends State<DetailJobScreen> {
                 ],
               ),
             ),
+          uid==FirebaseAuth.instance.currentUser!.uid ?  
+          SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: 56,
+              child: ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                )),
+                child: Text(
+                  "View Applicants",
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge
+                      ?.copyWith(color: Colors.white),
+                ),
+              ),
+            ):
             SizedBox(
               width: MediaQuery.of(context).size.width,
               height: 56,

@@ -10,6 +10,7 @@ import 'package:flutter_job_seeking/Helper/DialogHelper.dart';
 import 'package:flutter_job_seeking/Repository/ProfileRepo.dart';
 import 'package:flutter_job_seeking/feature/Authentication/CreateAccount.dart';
 import 'package:flutter_job_seeking/feature/Authentication/LoginPage.dart';
+import 'package:flutter_job_seeking/feature/Profile/ResumeViewer.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -24,6 +25,7 @@ class _ProfileState extends State<Profile> {
 
 String name="";
 String pos="";
+bool online=true;
 String image="https://th.bing.com/th/id/OIP.ZT-Tw8tYy38htqch69vsGQAAAA?pid=ImgDet&rs=1";
 String res="";
 Future getUserData() async {
@@ -35,6 +37,7 @@ Future getUserData() async {
         pos=value.data()!['position'];
         image=value.data()!['profile'];
         res=value.data()!['resume'];
+        online=value.data()!['isAvailable'];
       });
       print("this is re"+ res);
     }
@@ -142,15 +145,12 @@ if (result != null) {
                         children: [
                           GestureDetector(
                             onTap: () async {
-                              try {
-                                 if (await canLaunchUrl(Uri.parse(res))) {
-                                await launchUrl(Uri.parse(res));
-                              }                          
-                              } catch (e) {
-                               print(e); 
-                              }
+                              if (!await launchUrl(Uri.parse(res))) {
+                                print("eror");
+                                    throw Exception('Could not launch $res');
+                                  }
                                     // Navigator.pushReplacement(
-                              //       context, MaterialPageRoute(builder: (BuildContext context) => Web(url: res)));
+                                    // context, MaterialPageRoute(builder: (BuildContext context) => ResumeViewer(resume: res)));
                             },
                             child: Icon(
                               card.icon,
@@ -194,6 +194,17 @@ if (result != null) {
             ),
           ),
           const SizedBox(height: 35),
+          ListTile(
+            leading: Icon(Icons.online_prediction),
+            title: Text("Looking for Job"),
+            trailing: CupertinoSwitch(
+              value: online, onChanged: ((value) {
+              setState(() {
+                online=value;
+              });
+              ProfileRepo().updateStatus(status: value);
+            }),
+            ),),
           ...List.generate(
             customListTiles.length,
             (index) {
