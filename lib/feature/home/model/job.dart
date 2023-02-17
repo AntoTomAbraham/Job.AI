@@ -41,7 +41,7 @@ final recentJobs = [
       "High level proviciency in Figma",
       "Has a knowlege several programing language such as Phyton, Go, Kotlin",
       "Has deep understanding Android lifecycle",
-      "Exhibits excelent desain and illustration skills",
+      "Exhibits excelent Desain and illustration skills",
     ],
     about:
         "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
@@ -63,7 +63,7 @@ final recentJobs = [
       "High level proviciency in Figma",
       "Has a knowlege several programing language such as Phyton, Go, Kotlin",
       "Has deep understanding Android lifecycle",
-      "Exhibits excelent desain and illustration skills",
+      "Exhibits excelent Desain and illustration skills",
     ],
     about:
         "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
@@ -72,7 +72,7 @@ final recentJobs = [
   Job(
     companyName: "Google",
     companyImage: "assets/ic_google.png",
-    jobTitle: "Product Desainer",
+    jobTitle: "Product Designer",
     location: "United States",
     locationShort: "USA",
     salary: "5K",
@@ -85,7 +85,7 @@ final recentJobs = [
       "High level proviciency in Figma",
       "Has a knowlege several programing language such as Phyton, Go, Kotlin",
       "Has deep understanding Android lifecycle",
-      "Exhibits excelent desain and illustration skills",
+      "Exhibits excelent Desain and illustration skills",
     ],
     about:
         "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
@@ -107,7 +107,7 @@ final recentJobs = [
       "High level proviciency in Figma",
       "Has a knowlege several programing language such as Phyton, Go, Kotlin",
       "Has deep understanding Android lifecycle",
-      "Exhibits excelent desain and illustration skills",
+      "Exhibits excelent Design and illustration skills",
     ],
     about:
         "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",

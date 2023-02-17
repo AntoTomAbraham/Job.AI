@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:d_chart/d_chart.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_job_seeking/core/theme/app_color.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -14,7 +15,7 @@ class jobAnalytics extends StatefulWidget {
   State<jobAnalytics> createState() => _jobAnalyticsState();
 }
 class _jobAnalyticsState extends State<jobAnalytics> {
-  List count=[];
+  //List count=[];
   int len=0;
   Future getInsight() async {
 
@@ -24,7 +25,7 @@ class _jobAnalyticsState extends State<jobAnalytics> {
       if(value.exists){
         setState(() {
           len=value.data()!['view'];
-          count=value.data()!['Analytics'];
+          //count=value.data()!['Analytics'];
         });
       }
     });
@@ -72,7 +73,7 @@ class _jobAnalyticsState extends State<jobAnalytics> {
               }
               List list=snapshot.data!.docs.map((e){
                 return {
-                  'domain':e.data()['Date'],
+                  'domain':e.data()['Date'].toString().split('-')[0],
                   'measure':e.data()['count'],
                 };
               }).toList();
@@ -84,12 +85,45 @@ class _jobAnalyticsState extends State<jobAnalytics> {
                     'id':'Bar',
                     'data':list
                   }],
-                  axisLineColor: Colors.green,
-                  barColor: ((barData, index, id) => Colors.green),
+                  axisLineColor: AppColor.primaryColor,
+                 animate: true,
+                  barColor: ((barData, index, id) => AppColor.primaryColor),
                   showBarValue: true,
                 ),
               );
-          })
+          }),
+          SizedBox(height:20),
+          // StreamBuilder(
+          //   stream: FirebaseFirestore.instance.collection('Job').doc(widget.JobID).collection('Insights').snapshots(),
+          //   builder: (context,AsyncSnapshot<QuerySnapshot<Map<String,dynamic>>> snapshot) {
+          //     if(snapshot.hasError){
+          //       return Text("SOme error");
+          //     }
+          //     if(snapshot.connectionState==ConnectionState.waiting){
+          //       return CircularProgressIndicator();
+          //     }
+          //     if(!snapshot.hasData){
+          //       return Text("Null");
+          //     }
+          //     List list=snapshot.data!.docs.map((e){
+          //       return {
+          //         'domain':e.data()['Date'].toString().split('-')[1],
+          //         'measure':e.data()['count'],
+          //       };
+          //     }).toList();
+          //     print(list);
+          //     return AspectRatio(
+          //       aspectRatio: 16/3,
+          //       child: DChartLine(
+          //           data:[
+          //          {
+          //           'id':'Line',
+          //           'data':list
+          //         }],
+          //        lineColor: (lineData, index, id) => Colors.amber
+          //       ),
+          //     );
+          // })
     ],),
       )),);
   }

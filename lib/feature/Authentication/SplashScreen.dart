@@ -24,13 +24,13 @@ class _SplashScreenState extends State<SplashScreen> {
         const Duration(seconds: 3),
         () { 
           if(FirebaseAuth.instance.currentUser?.getIdToken() ==null){
-        return Navigator.push(
+        return Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => GetStartedScreen()),
              
             );
           }else{
-             return Navigator.push(
+             return Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => HomePage()),
              

@@ -35,7 +35,8 @@ class _DetailJobScreenState extends State<DetailJobScreen> {
     print("jobData called");
     await FirebaseFirestore.instance.collection('Job').doc(widget.jobID)
     .get().then((value) async {
-      print(value.exists);
+    print(value);
+    print(value.exists);
     if(value.exists){
       setState(() {
         jobPosition=value.data()!['Jobtitle'];
@@ -47,6 +48,7 @@ class _DetailJobScreenState extends State<DetailJobScreen> {
         req=value.data()!['requirements'];
         uid=value.data()!['uid'];
       });
+      print(desc);
       print("this is re"+ jobPosition);
     }
  });

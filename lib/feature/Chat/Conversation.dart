@@ -1,17 +1,75 @@
+//import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_job_seeking/Models/Messages.dart';
 import 'package:flutter_job_seeking/Models/message_model.dart';
 import 'package:flutter_job_seeking/Models/user_model.dart';
+import 'package:flutter_job_seeking/Repository/ChatRepo.dart';
 
 class Conversation extends StatefulWidget {
   final User user;
+  final String chatWith;
 
-  Conversation({required this.user});
+  Conversation({required this.user,required this.chatWith});
 
   @override
   _ConversationState createState() => _ConversationState();
 }
 
 class _ConversationState extends State<Conversation> {
+
+  final TextEditingController controller=TextEditingController();
+  String ChatroomID="",messageID="";
+
+  getINFO(){
+    ChatroomID=getChatID(widget.chatWith, "sdkflf");
+  }
+
+  getChatID(String a,String b){
+    if(a.substring(0,1).codeUnitAt(0)>b.substring(0,1).codeUnitAt(0)){
+      return "$b\_$a";
+    }else{
+      return "$a\_$b";
+    }
+  }
+
+  dothisOnLaunch() async {
+    await getINFO();
+    getAndsetMessage();
+  }
+
+  addMessage(bool sentClick) async{
+    if(controller.text.isNotEmpty){
+      String message=controller.text;
+      var lastMessageTimeStamp=DateTime.now();
+      Map<String,dynamic> messageInfoMap={
+        "Message":message,
+        "sendBY":"",
+        "ts":lastMessageTimeStamp,
+      };
+      if(messageID==""){
+        messageID=Random().nextInt(12).toString();
+      }
+      ChatRepo().addMessage(ChatroomID, messageID, messageInfoMap).then((value) {
+
+      });
+      controller.clear();
+    }
+  }
+
+  getAndsetMessage() async{
+
+  }
+
+  @override
+  void initState() {
+    //dothisOnLaunch();
+    // TODO: implement initState
+    super.initState();
+   
+  }
+
   _chatBubble(Message message, bool isMe, bool isSameUser) {
     if (isMe) {
       return Column(
@@ -164,6 +222,11 @@ class _ConversationState extends State<Conversation> {
           ),
           Expanded(
             child: TextField(
+              onChanged: (value) {
+                setState(() {
+                  message=value;
+                });
+              },
               decoration: InputDecoration.collapsed(
                 hintText: 'Send a message..',
               ),
@@ -174,13 +237,18 @@ class _ConversationState extends State<Conversation> {
             icon: Icon(Icons.send),
             iconSize: 25,
             color: Theme.of(context).primaryColor,
-            onPressed: () {},
+            onPressed: () {
+              FocusScope.of(context).unfocus();
+              //message.trim().isEmpty?null: ChatRepo.sendMessage(message: message,sentUser: '7PMgKkLTfVMGulh7KuHQcYIcXpE2');
+              controller.clear();
+              message="";
+            },
           ),
         ],
       ),
     );
   }
-
+  String message="";
   @override
   Widget build(BuildContext context) {
     int prevUserId=0;
@@ -229,6 +297,15 @@ class _ConversationState extends State<Conversation> {
       body: Column(
         children: <Widget>[
           Expanded(
+            // child:StreamBuilder<List<Messages>>(builder: (context, snapshot){
+            //   final message=snapshot.data;
+            //   return message==null? Text("Nothing"): 
+            //   ListView.builder(
+            //     itemCount: message.length,
+            //     physics: BouncingScrollPhysics(),
+            //     itemBuilder: (context, index) {
+            //     },);
+            // } )
             child: ListView.builder(
               reverse: true,
               padding: EdgeInsets.all(20),

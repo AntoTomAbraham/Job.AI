@@ -10,7 +10,7 @@ class CategoryWidget extends StatefulWidget {
 }
 
 class _CategoryWidgetState extends State<CategoryWidget> {
-  final categoryTitle = ["Desain", "Software", "Data", "Marketing"];
+  final categoryTitle = ["Design", "Software", "Data", "Marketing"];
   final categoryIcon = [
     "assets/ic_desainer.png",
     "assets/ic_coding.png",

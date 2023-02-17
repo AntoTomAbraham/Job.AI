@@ -42,6 +42,7 @@ class ChatScreen extends StatelessWidget {
               MaterialPageRoute(
                 builder: (_) => Conversation(
                   user: chat.sender,
+                  chatWith: 'sdkflsjkfljsklfjsdkl',
                 ),
               ),
             ),

@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class JobRepo{
   static Future CreateJOB({required String company,required String pos,required String jobtype,required String jobID,required String desc,required String workPlaceType,required String salary,required String jobLocation,required List<dynamic> requirements}) async {
-    final docUser=FirebaseFirestore.instance.collection(company+jobID).doc();
+    final docUser=FirebaseFirestore.instance.collection('Job').doc(company+jobID);
     final json= {
       'Jobtitle':pos,
       'jobLocation':jobLocation,
