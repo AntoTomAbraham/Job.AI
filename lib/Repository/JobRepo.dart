@@ -57,4 +57,8 @@ class JobRepo{
     }
   }
 
+  static queryJob(String queryString) async{
+    return FirebaseFirestore.instance.collection('Job').where('Jobtitle',isGreaterThanOrEqualTo: queryString).get();
+  }
+
 }

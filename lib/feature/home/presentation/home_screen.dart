@@ -1,15 +1,41 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_job_seeking/feature/Search/SearchResult.dart';
 import 'package:flutter_job_seeking/feature/home/presentation/widget/category_widget.dart';
 import 'package:flutter_job_seeking/feature/home/presentation/widget/headline_widget.dart';
 import 'package:flutter_job_seeking/feature/home/presentation/widget/recent_job_widget.dart';
 import 'package:flutter_job_seeking/feature/home/presentation/widget/tips_widget.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  String name="";
+  getUserData() async {
+    await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid)
+ .get().then((value) async {
+    if(value.exists){
+      setState(() {
+        name=value.data()!['name'];
+      });
+      print("this is re"+ name);
+    }
+ });
+  }
+  @override
+  void initState() {
+    getUserData();
+    // TODO: implement initState
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +53,7 @@ class HomeScreen extends StatelessWidget {
         ),
         centerTitle: true,
         title: Text(
-          "Hi, William",
+          "Hi, $name",
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         actions: [
@@ -56,21 +82,27 @@ class HomeScreen extends StatelessWidget {
               ),
               padding: const EdgeInsets.symmetric(horizontal: 24),
               alignment: Alignment.center,
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.search,
-                    color: Colors.grey,
-                  ),
-                  const SizedBox(width: 16),
-                  Text(
-                    "Developer, google, etc",
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium
-                        ?.copyWith(color: Colors.grey),
-                  ),
-                ],
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                          context, MaterialPageRoute(builder: (BuildContext context) => SearchResult()));
+                },
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.search,
+                      color: Colors.grey,
+                    ),
+                    const SizedBox(width: 16),
+                    Text(
+                      "Developer, google, etc",
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: Colors.grey),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

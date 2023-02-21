@@ -3,11 +3,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_job_seeking/Models/Messages.dart';
 
 class ChatRepo{ 
-  Future<Stream<QuerySnapshot>> getUserByemail(String email) async { 
-    return FirebaseFirestore.instance.collection('users').where('email',isEqualTo: email).snapshots();
+  static Future<void> createConversation(String chatRoomID,chatRoomMap) async {
+    FirebaseFirestore.instance.collection('ChatRoom').doc(chatRoomID).set(chatRoomMap)
+    .catchError((e)=>print(e));
   }
 
-  Future addMessage(String chatroomID,String messageID,Map<String,dynamic> messageINFO){
-    return FirebaseFirestore.instance.collection('chatRooms').doc(chatroomID).collection('chats').doc(messageID).set(messageINFO);
+  static Future<dynamic> sendmessages(String chatRoomID,messageMap) async {
+    print("ins send message func");
+    await FirebaseFirestore.instance.collection('ChatRoom').doc(chatRoomID).collection('Chats').add(messageMap)
+    .catchError((e)=>print(e));
+  }
+
+  static Future<dynamic> getMessages(String chatRoomID) async {
+    return await FirebaseFirestore.instance.collection('ChatRoom').doc(chatRoomID).collection('Chats').snapshots();
   }
 }

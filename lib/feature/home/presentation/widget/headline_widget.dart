@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_job_seeking/feature/Job/SeeAllJob.dart';
 
 class HeadlineWidget extends StatelessWidget {
   const HeadlineWidget({
@@ -23,11 +24,19 @@ class HeadlineWidget extends StatelessWidget {
           title,
           style: Theme.of(context).textTheme.titleMedium,
         ),
-        Text(
-          actionText,
-          style: Theme.of(context).textTheme.button?.copyWith(
-                color: Colors.blue,
-              ),
+        GestureDetector(
+          onTap: (){
+             Navigator.push(  
+                  context,  
+                  MaterialPageRoute(builder: (context) => 
+                  SeeAllJob()));
+          },
+          child: Text(
+            actionText,
+            style: Theme.of(context).textTheme.button?.copyWith(
+                  color: Colors.blue,
+                ),
+          ),
         ),
       ],
     );

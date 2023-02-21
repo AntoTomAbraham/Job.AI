@@ -1,17 +1,21 @@
 //import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_job_seeking/Models/Messages.dart';
 import 'package:flutter_job_seeking/Models/message_model.dart';
 import 'package:flutter_job_seeking/Models/user_model.dart';
 import 'package:flutter_job_seeking/Repository/ChatRepo.dart';
+import 'package:get/get.dart';
 
 class Conversation extends StatefulWidget {
-  final User user;
+  //final User user;
   final String chatWith;
+  final String chatRoomID;
 
-  Conversation({required this.user,required this.chatWith});
+  Conversation({required this.chatWith,required this.chatRoomID});
 
   @override
   _ConversationState createState() => _ConversationState();
@@ -20,189 +24,175 @@ class Conversation extends StatefulWidget {
 class _ConversationState extends State<Conversation> {
 
   final TextEditingController controller=TextEditingController();
-  String ChatroomID="",messageID="";
 
-  getINFO(){
-    ChatroomID=getChatID(widget.chatWith, "sdkflf");
-  }
-
-  getChatID(String a,String b){
-    if(a.substring(0,1).codeUnitAt(0)>b.substring(0,1).codeUnitAt(0)){
-      return "$b\_$a";
-    }else{
-      return "$a\_$b";
-    }
-  }
-
-  dothisOnLaunch() async {
-    await getINFO();
-    getAndsetMessage();
-  }
-
-  addMessage(bool sentClick) async{
+  sendMessage() async {
+    print("inside func 1");
+    print(controller.text);
     if(controller.text.isNotEmpty){
-      String message=controller.text;
-      var lastMessageTimeStamp=DateTime.now();
-      Map<String,dynamic> messageInfoMap={
-        "Message":message,
-        "sendBY":"",
-        "ts":lastMessageTimeStamp,
-      };
-      if(messageID==""){
-        messageID=Random().nextInt(12).toString();
-      }
-      ChatRepo().addMessage(ChatroomID, messageID, messageInfoMap).then((value) {
-
-      });
-      controller.clear();
+      print("is not empty");
+    Map<String,dynamic> messageMap ={
+      "message":controller.text,
+      "sendby":FirebaseAuth.instance.currentUser!.uid,
+      "time":DateTime.now().millisecondsSinceEpoch
+    };
+    await ChatRepo.sendmessages(widget.chatRoomID, messageMap);
     }
   }
-
-  getAndsetMessage() async{
-
-  }
-
+  ScrollController scrollcontroller = ScrollController();
+  
   @override
   void initState() {
-    //dothisOnLaunch();
+  //   final position = scrollcontroller.position.maxScrollExtent;
+  //  scrollcontroller.jumpTo(position);
+    ChatRepo.getMessages(widget.chatRoomID).then((val){
+      //chatMessageStream=val;
+      setState(() {});
+    });
     // TODO: implement initState
     super.initState();
    
   }
+  
 
-  _chatBubble(Message message, bool isMe, bool isSameUser) {
+  _chatBubble(String message, bool isMe,bool isSameUser) {
     if (isMe) {
-      return Column(
-        children: <Widget>[
-          Container(
-            alignment: Alignment.topRight,
-            child: Container(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.80,
-              ),
-              padding: EdgeInsets.all(10),
-              margin: EdgeInsets.symmetric(vertical: 10),
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
-                borderRadius: BorderRadius.circular(15),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 2,
-                    blurRadius: 5,
+      return Padding(
+        padding: const EdgeInsets.only(right:14.0),
+        child: Column(
+          children: <Widget>[
+            Container(
+              alignment: Alignment.topRight,
+              child: Container(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.80,
+                ),
+                padding: EdgeInsets.all(10),
+                margin: EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                    ),
+                  ],
+                ),
+                child: Text(
+                  message,
+                  style: TextStyle(
+                    color: Colors.white,
                   ),
-                ],
-              ),
-              child: Text(
-                message.text,
-                style: TextStyle(
-                  color: Colors.white,
                 ),
               ),
             ),
-          ),
-          !isSameUser
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    Text(
-                      message.time,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.black45,
+            !isSameUser
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: <Widget>[
+                      Text(
+                        " ",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.black45,
+                        ),
                       ),
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                          ),
-                        ],
+                      SizedBox(
+                        width: 10,
                       ),
-                      child: CircleAvatar(
-                        radius: 15,
-                        backgroundImage: NetworkImage('https://th.bing.com/th/id/OIP.qP3TMGjdzOhWY3U370U_XAHaJR?w=149&h=186&c=7&r=0&o=5&dpr=1.5&pid=1.7'),
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 2,
+                              blurRadius: 5,
+                            ),
+                          ],
+                        ),
+                        child: CircleAvatar(
+                          radius: 15,
+                          backgroundImage: NetworkImage('https://th.bing.com/th/id/OIP.qP3TMGjdzOhWY3U370U_XAHaJR?w=149&h=186&c=7&r=0&o=5&dpr=1.5&pid=1.7'),
+                        ),
                       ),
-                    ),
-                  ],
-                )
-              : Container(
-                  child: null,
-                ),
-        ],
+                    ],
+                  )
+                : Container(
+                    child: null,
+                  ),
+          ],
+        ),
       );
     } else {
-      return Column(
-        children: <Widget>[
-          Container(
-            alignment: Alignment.topLeft,
-            child: Container(
-              constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.80,
-              ),
-              padding: EdgeInsets.all(10),
-              margin: EdgeInsets.symmetric(vertical: 10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 2,
-                    blurRadius: 5,
+      return Padding(
+        padding: const EdgeInsets.only(left:14.0),
+        child: Column(
+          children: <Widget>[
+            Container(
+              alignment: Alignment.topLeft,
+              child: Container(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.80,
+                ),
+                padding: EdgeInsets.all(10),
+                margin: EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                    ),
+                  ],
+                ),
+                child: Text(
+                  message,
+                  style: TextStyle(
+                    color: Colors.black54,
                   ),
-                ],
-              ),
-              child: Text(
-                message.text,
-                style: TextStyle(
-                  color: Colors.black54,
                 ),
               ),
             ),
-          ),
-          !isSameUser
-              ? Row(
-                  children: <Widget>[
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                          ),
-                        ],
+            !isSameUser
+                ? Row(
+                    children: <Widget>[
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.5),
+                              spreadRadius: 2,
+                              blurRadius: 5,
+                            ),
+                          ],
+                        ),
+                        child: CircleAvatar(
+                          radius: 15,
+                          backgroundImage: NetworkImage('https://th.bing.com/th/id/OIP.qP3TMGjdzOhWY3U370U_XAHaJR?w=149&h=186&c=7&r=0&o=5&dpr=1.5&pid=1.7'),
+                        ),
                       ),
-                      child: CircleAvatar(
-                        radius: 15,
-                        backgroundImage: NetworkImage('https://th.bing.com/th/id/OIP.qP3TMGjdzOhWY3U370U_XAHaJR?w=149&h=186&c=7&r=0&o=5&dpr=1.5&pid=1.7'),
+                      SizedBox(
+                        width: 10,
                       ),
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      message.time,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.black45,
+                      Text(
+                        " ",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.black45,
+                        ),
                       ),
-                    ),
-                  ],
-                )
-              : Container(
-                  child: null,
-                ),
-        ],
+                    ],
+                  )
+                : Container(
+                    child: null,
+                  ),
+          ],
+        ),
       );
     }
   }
@@ -222,11 +212,12 @@ class _ConversationState extends State<Conversation> {
           ),
           Expanded(
             child: TextField(
-              onChanged: (value) {
-                setState(() {
-                  message=value;
-                });
-              },
+              controller: controller,
+              // onChanged: (value) {
+              //   setState(() {
+              //     message=value;
+              //   });
+              // },
               decoration: InputDecoration.collapsed(
                 hintText: 'Send a message..',
               ),
@@ -239,9 +230,11 @@ class _ConversationState extends State<Conversation> {
             color: Theme.of(context).primaryColor,
             onPressed: () {
               FocusScope.of(context).unfocus();
+              print("send");
+              sendMessage();
               //message.trim().isEmpty?null: ChatRepo.sendMessage(message: message,sentUser: '7PMgKkLTfVMGulh7KuHQcYIcXpE2');
               controller.clear();
-              message="";
+              //message="";
             },
           ),
         ],
@@ -262,13 +255,13 @@ class _ConversationState extends State<Conversation> {
           text: TextSpan(
             children: [
               TextSpan(
-                  text: widget.user.name,
+                  text: widget.chatWith,
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
                   )),
               TextSpan(text: '\n'),
-              widget.user.isOnline ?
+              true ?
               TextSpan(
                 text: 'Online',
                 style: TextStyle(
@@ -297,6 +290,36 @@ class _ConversationState extends State<Conversation> {
       body: Column(
         children: <Widget>[
           Expanded(
+            child: StreamBuilder(
+              stream: FirebaseFirestore.instance.collection('ChatRoom')
+              .doc(widget.chatRoomID).collection('Chats')
+              .orderBy('time',descending: false)
+              .snapshots(),
+            builder: (context, snapshot) {
+              if(snapshot.hasData) {
+               return SingleChildScrollView(
+                reverse: false,
+                 child: Container(
+                  height: Get.height*.77,
+                  //padding: EdgeInsets.only(left:16,right: 16),
+                   child: ListView.builder(
+                    reverse: false,
+                  
+                    controller: scrollcontroller,
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (context, index) {
+                      String textmessage=snapshot.data!.docs[index].data()['message'];
+                      String send=snapshot.data!.docs[index].data()['sendby'];
+                      return _chatBubble(textmessage.toString(), send==FirebaseAuth.instance.currentUser!.uid,true);
+                    },
+                   ),
+                 ),
+               );
+               }else{
+                return Container();
+               }
+              },
+            ),
             // child:StreamBuilder<List<Messages>>(builder: (context, snapshot){
             //   final message=snapshot.data;
             //   return message==null? Text("Nothing"): 
@@ -306,18 +329,18 @@ class _ConversationState extends State<Conversation> {
             //     itemBuilder: (context, index) {
             //     },);
             // } )
-            child: ListView.builder(
-              reverse: true,
-              padding: EdgeInsets.all(20),
-              itemCount: messages.length,
-              itemBuilder: (BuildContext context, int index) {
-                final Message message = messages[index];
-                final bool isMe = message.sender.id == currentUser.id;
-                final bool isSameUser = prevUserId == message.sender.id;
-                prevUserId = message.sender.id;
-                return _chatBubble(message, isMe, isSameUser);
-              },
-            ),
+            // child: ListView.builder(
+            //   reverse: true,
+            //   padding: EdgeInsets.all(20),
+            //   itemCount: messages.length,
+            //   itemBuilder: (BuildContext context, int index) {
+            //     final Message message = messages[index];
+            //     final bool isMe = message.sender.id == currentUser.id;
+            //     final bool isSameUser = prevUserId == message.sender.id;
+            //     prevUserId = message.sender.id;
+            //     return _chatBubble(message, isMe, isSameUser);
+            //   },
+            // ),
           ),
           _sendMessageArea(),
         ],

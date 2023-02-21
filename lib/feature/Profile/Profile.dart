@@ -166,7 +166,7 @@ if (result != null) {
                           ElevatedButton(
                             onPressed: () async{
                               if(card.icon==CupertinoIcons.person_circle){
-                                  Navigator.pushReplacement(
+                                  Navigator.push(
                                     context, MaterialPageRoute(builder: (BuildContext context) => CreateAccount()));
                               }else if(card.icon==CupertinoIcons.doc){
                                 await chooseFile();

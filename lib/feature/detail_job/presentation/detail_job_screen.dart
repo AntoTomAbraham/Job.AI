@@ -4,8 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_job_seeking/Models/message_model.dart';
+import 'package:flutter_job_seeking/Repository/ApplicationRepo.dart';
+import 'package:flutter_job_seeking/Repository/ChatRepo.dart';
+import 'package:flutter_job_seeking/Repository/JobRepo.dart';
+import 'package:flutter_job_seeking/Repository/ProfileRepo.dart';
 import 'package:flutter_job_seeking/core/theme/app_color.dart';
+import 'package:flutter_job_seeking/feature/Chat/Conversation.dart';
 import 'package:flutter_job_seeking/feature/home/model/job.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 enum _Tab {
   requirement,
@@ -31,6 +38,7 @@ class _DetailJobScreenState extends State<DetailJobScreen> {
   String workPlaceType="";
   List<dynamic> req=[];
   String uid="";
+  String data="";
   Future getJobData() async {
     print("jobData called");
     await FirebaseFirestore.instance.collection('Job').doc(widget.jobID)
@@ -51,6 +59,11 @@ class _DetailJobScreenState extends State<DetailJobScreen> {
       print(desc);
       print("this is re"+ jobPosition);
     }
+ });
+ final docUser=await FirebaseFirestore.instance.collection('users').doc(uid).get().then((val){return val.data()!['name'];});
+ setState(() {
+  data=docUser;
+    print(data);
  });
   }
  
@@ -106,13 +119,15 @@ class _DetailJobScreenState extends State<DetailJobScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     margin: const EdgeInsets.symmetric(vertical: 16),
-                    child: Image(
-                      image: AssetImage(
-                        "assets/ic_twitter.png",
-                      ),
                       width: 96,
                       height: 96,
-                    ),
+                      child: company.isNotEmpty ? FadeInImage(
+                        placeholder: NetworkImage('https://logo.clearbit.com/$company'), 
+                        image:   NetworkImage('https://logo.clearbit.com/$company'),
+                        imageErrorBuilder:(context, error, stackTrace) {
+                          return  Image.network('https://media.istockphoto.com/vectors/broken-file-line-icon-vector-id1146597753?k=6&m=1146597753&s=612x612&w=0&h=OM5uYm7mpD3dW3S3nSHDwIwy5kbIQcIEW9i46HKTahM='); 
+                        },):Container()
+                      
                   ),
                   Text(
                     jobPosition,
@@ -121,10 +136,25 @@ class _DetailJobScreenState extends State<DetailJobScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    company,
+                    company.toString().toUpperCase().split('.')[0],
                     style: Theme.of(context).textTheme.bodyMedium,
                     textAlign: TextAlign.center,
                   ),
+                  const SizedBox(height: 8),
+                  InkWell(
+                    onTap: () {
+                    List<String> users=[uid,FirebaseAuth.instance.currentUser!.uid];
+                    String chatRoomID=getChatRoomID(uid, FirebaseAuth.instance.currentUser!.uid);
+                    Map<String,dynamic> chatRoomMap={
+                      "users":users,
+                      "chatRoomID":chatRoomID
+                    };
+                    ChatRepo.createConversation(chatRoomID, chatRoomMap);
+                     final Message chat = chats[0];
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>Conversation(chatRoomID: chatRoomID,chatWith: uid)));
+                    //create chat room = send user to conversation screen =
+                  },
+                  child: Chip(deleteIcon: Icon(Icons.person,color: AppColor.primaryColor,),onDeleted: (){},label: Text(data,style: GoogleFonts.poppins(color: AppColor.primaryColor)),backgroundColor: AppColor.primarySwatch.shade50)),
                   const SizedBox(height: 32),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -390,7 +420,9 @@ class _DetailJobScreenState extends State<DetailJobScreen> {
               width: MediaQuery.of(context).size.width,
               height: 56,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  ApplicationRepo.apply(jobID: widget.jobID , coverLetter: "sklkfj");
+                },
                 style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
@@ -408,5 +440,12 @@ class _DetailJobScreenState extends State<DetailJobScreen> {
         ),
       ),
     );
+  }
+  getChatRoomID(String a,String b){
+    if(a.substring(0,1).codeUnitAt(0)>b.substring(0,1).codeUnitAt(0)){
+      return "$a\_$b";
+    }else{
+      return "$b\_$a";
+    }
   }
 }

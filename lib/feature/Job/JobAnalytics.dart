@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:d_chart/d_chart.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_job_seeking/core/theme/app_color.dart';
 import 'package:get/get.dart';
@@ -17,28 +18,29 @@ class jobAnalytics extends StatefulWidget {
 class _jobAnalyticsState extends State<jobAnalytics> {
   //List count=[];
   int len=0;
+  int applLen=0;
   Future getInsight() async {
 
-   //Total views
    await FirebaseFirestore.instance.collection('Job').doc(widget.JobID)
     .get().then((value) async {
       if(value.exists){
         setState(() {
           len=value.data()!['view'];
-          //count=value.data()!['Analytics'];
         });
       }
     });
+    }
 
- }
   @override
   void initState() {
     getInsight();
     // TODO: implement initState
     super.initState();
   }
+  List month=["January","February","March","April","May","June","July","August","September","October","November","December"];
   @override
   Widget build(BuildContext context) {
+    //print(dat.length);
     return Scaffold(
       appBar: AppBar(backgroundColor: Colors.white,
       elevation: 0,
@@ -51,79 +53,122 @@ class _jobAnalyticsState extends State<jobAnalytics> {
           SizedBox(height: 20),
           Container(
             height: Get.height*.1,
-            child: Column(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Text(len.toString(),style: GoogleFonts.poppins(fontSize: 28),),
-                Text('Total views',style: GoogleFonts.poppins(fontSize: 12),),
+                Column(
+                  children: [
+                    Text(len.toString(),style: GoogleFonts.poppins(fontSize: 28),),
+                    Text('Total views',style: GoogleFonts.poppins(fontSize: 12),),
+                  ],
+                ),
+                Column(
+                  children: [
+                    Text(applLen.toString(),style: GoogleFonts.poppins(fontSize: 28),),
+                    Text('Total application',style: GoogleFonts.poppins(fontSize: 12),),
+                  ],
+                ),
               ],
             ),
           ),
-
-          StreamBuilder(
-            stream: FirebaseFirestore.instance.collection('Job').doc(widget.JobID).collection('Insights').snapshots(),
-            builder: (context,AsyncSnapshot<QuerySnapshot<Map<String,dynamic>>> snapshot) {
-              if(snapshot.hasError){
-                return Text("SOme error");
-              }
-              if(snapshot.connectionState==ConnectionState.waiting){
-                return CircularProgressIndicator();
-              }
-              if(!snapshot.hasData){
-                return Text("Null");
-              }
-              List list=snapshot.data!.docs.map((e){
-                return {
-                  'domain':e.data()['Date'].toString().split('-')[0],
-                  'measure':e.data()['count'],
-                };
-              }).toList();
-              print(list);
-              return AspectRatio(
-                aspectRatio: 16/3,
-                child: DChartBar(
-                    data:[{
-                    'id':'Bar',
-                    'data':list
-                  }],
-                  axisLineColor: AppColor.primaryColor,
-                 animate: true,
-                  barColor: ((barData, index, id) => AppColor.primaryColor),
-                  showBarValue: true,
+          Container(
+            height: Get.height*.33,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Card(
+                elevation: 1,
+                shadowColor: Colors.white60,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left:8.0),
+                      child: Row(
+                        children: [
+                          Text("${month[DateTime.now().month-1]} view Analytics ",style: GoogleFonts.poppins(fontSize: 12),),
+                          Icon(Icons.analytics_outlined)
+                        ],
+                      ),
+                    ),
+                    StreamBuilder(
+                      stream: FirebaseFirestore.instance.collection('Job').doc(widget.JobID).collection('Insights').snapshots(),
+                      builder: (context,AsyncSnapshot<QuerySnapshot<Map<String,dynamic>>> snapshot) {
+                        if(snapshot.hasError){
+                          return Text("SOme error");
+                        }
+                        if(snapshot.connectionState==ConnectionState.waiting){
+                          return CircularProgressIndicator();
+                        }
+                        if(!snapshot.hasData){
+                          return Text("Null");
+                        }
+                        List list=snapshot.data!.docs.map((e){
+                          print(DateTime.now().toString().split('-')[1]);
+                          return {
+                            'domain':e.data()['Date'].toString().split('-')[0],
+                            'measure':e.data()['count'],
+                          };
+                        }).toList();
+                        print(list);
+                        return 
+                        //AspectRatio(
+                          //aspectRatio: 16/3,
+                          Container(
+                            height: Get.height*.25,
+                            width: Get.width*.8,
+                          child: DChartBar(
+                              data:[{
+                              'id':'Bar',
+                              'data':list
+                            }],
+                            axisLineColor: AppColor.primaryColor,
+                           animate: true,
+                            barColor: ((barData, index, id) => AppColor.primaryColor),
+                            showBarValue: true,
+                          ),
+                        );
+                    }),
+                  ],
                 ),
-              );
-          }),
-          SizedBox(height:20),
-          // StreamBuilder(
-          //   stream: FirebaseFirestore.instance.collection('Job').doc(widget.JobID).collection('Insights').snapshots(),
-          //   builder: (context,AsyncSnapshot<QuerySnapshot<Map<String,dynamic>>> snapshot) {
-          //     if(snapshot.hasError){
-          //       return Text("SOme error");
-          //     }
-          //     if(snapshot.connectionState==ConnectionState.waiting){
-          //       return CircularProgressIndicator();
-          //     }
-          //     if(!snapshot.hasData){
-          //       return Text("Null");
-          //     }
-          //     List list=snapshot.data!.docs.map((e){
-          //       return {
-          //         'domain':e.data()['Date'].toString().split('-')[1],
-          //         'measure':e.data()['count'],
-          //       };
-          //     }).toList();
-          //     print(list);
-          //     return AspectRatio(
-          //       aspectRatio: 16/3,
-          //       child: DChartLine(
-          //           data:[
-          //          {
-          //           'id':'Line',
-          //           'data':list
-          //         }],
-          //        lineColor: (lineData, index, id) => Colors.amber
-          //       ),
-          //     );
-          // })
+              ),
+            ),
+          ),
+          SizedBox(height:40), 
+         Card(
+          elevation: 1,
+          shadowColor: Colors.white60,
+           child: Column(
+             children: [
+              Padding(
+                      padding: const EdgeInsets.only(left:8.0),
+                      child: Row(
+                        children: [
+                          Text(" Views v/s Application",style: GoogleFonts.poppins(fontSize: 12),),
+                          Icon(Icons.data_exploration_outlined)
+                        ],
+                      ),
+                    ),
+               Container(
+                height: Get.height*.17,
+                 child: DChartPie(
+                 data: [
+                     {'domain': 'Applied', 'measure': applLen},
+                     {'domain': 'Views', 'measure': len},
+                 ],
+                 fillColor: (pieData, index) => AppColor.primaryColor,
+                 labelLineColor: Colors.black,
+                 labelPosition: PieLabelPosition.outside,
+                 pieLabel: (pieData, index) {
+                   return "${pieData['domain'] +" - "+ pieData['measure'].toString()}";
+                 },
+                //  donutWidth: 30,
+                //  labelColor: Colors.white,
+                 animate: true,
+                showLabelLine: true,
+         ),
+               ),
+             ],
+           ),
+         ),
     ],),
       )),);
   }

@@ -63,7 +63,7 @@ class _CreateAccountState extends State<CreateAccount> {
       child: Padding(
         padding: const EdgeInsets.only(left:8.0,right:8),
         child: Container(
-          height: MediaQuery.of(context).size.height*1,
+          height: MediaQuery.of(context).size.height*1+50  ,
           child: Padding(
           padding: const EdgeInsets.only(left:8.0,right:8),
           child: Column(
@@ -229,25 +229,28 @@ class _CreateAccountState extends State<CreateAccount> {
               ),
               obscureText: true,
             ),
-             ChipTags(
-  list: _myListCustom,
-  chipColor: Colors.black,
-  iconColor: Colors.white,
-  textColor: Colors.white,
-  chipPosition: ChipPosition.below,
-  decoration: InputDecoration(
-    hintText: "Skills",
-    helperText: "Enter your skills",
-                fillColor: Theme.of(context).primaryColor.withOpacity(0.1),
-                filled: true,
-                  errorStyle: TextStyle(color: Colors.redAccent, fontSize: 16.0),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(18),
-                    borderSide: BorderSide.none
-                  )
-    ),
-  keyboardType: TextInputType.text,
-),
+             Expanded(
+               child: ChipTags(
+               list: _myListCustom,
+               chipColor: Colors.black,
+               iconColor: Colors.white,
+               textColor: Colors.white,
+               chipPosition: ChipPosition.below,
+               decoration: InputDecoration(
+                 hintText: "Skills",
+                 helperText: "Enter your skills",
+                  fillColor: Theme.of(context).primaryColor.withOpacity(0.1),
+                  filled: true,
+                    errorStyle: TextStyle(color: Colors.redAccent, fontSize: 16.0),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(18),
+                      borderSide: BorderSide.none
+                    )
+                 ),
+               keyboardType: TextInputType.text,
+             ),
+             ),
+//SizedBox(height: 20),
  TextButton(child: Row(
   mainAxisAlignment: MainAxisAlignment.center,
   children: [

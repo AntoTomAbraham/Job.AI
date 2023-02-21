@@ -36,5 +36,11 @@ Future uploadResume({required String resume}) async {
     await docUser.update(json);
     }
 
+    // static Future<String> getUserByUID({required String uid})async{
+      
+    //   // print("DocUser");
+    //   // print(docUser);
+    //   // return docUser.toString();
+    // }
     
 }

@@ -44,6 +44,7 @@ dependencies:
   url_launcher: ^6.1.9
   http: ^0.13.5
   d_chart: ^2.0.2
+  timeline_tile: ^2.0.0
 
 
   # The following adds the Cupertino Icons font to your application.
