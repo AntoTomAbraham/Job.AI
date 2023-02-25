@@ -8,6 +8,7 @@ import 'package:flutter_job_seeking/Models/Messages.dart';
 import 'package:flutter_job_seeking/Models/message_model.dart';
 import 'package:flutter_job_seeking/Models/user_model.dart';
 import 'package:flutter_job_seeking/Repository/ChatRepo.dart';
+import 'package:flutter_job_seeking/feature/VideoCall/VideoCall.dart';
 import 'package:get/get.dart';
 
 class Conversation extends StatefulWidget {
@@ -79,7 +80,7 @@ class _ConversationState extends State<Conversation> {
                     ),
                   ],
                 ),
-                child: Text(
+                child: SelectableText(
                   message,
                   style: TextStyle(
                     color: Colors.white,
@@ -149,7 +150,7 @@ class _ConversationState extends State<Conversation> {
                     ),
                   ],
                 ),
-                child: Text(
+                child: SelectableText(
                   message,
                   style: TextStyle(
                     color: Colors.black54,
@@ -248,6 +249,18 @@ class _ConversationState extends State<Conversation> {
     return Scaffold(
       backgroundColor: Color(0xFFF6F6F6),
       appBar: AppBar(
+        actions: [
+          GestureDetector(onTap: (){
+            Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => VideoCall(chatRoomID: widget.chatRoomID,)
+                      ),
+                    );
+          },
+          child: Icon(Icons.video_camera_front_rounded,color: Colors.white,)),
+          SizedBox(width: 21)
+          ],
         brightness: Brightness.dark,
         centerTitle: true,
         title: RichText(

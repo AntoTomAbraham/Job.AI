@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chip_tags/flutter_chip_tags.dart';
+import 'package:flutter_job_seeking/Helper/DialogHelper.dart';
 import 'package:flutter_job_seeking/Repository/ProfileRepo.dart';
 //import 'package:flutter_job_seeking/feature/Authentication/HRaccountCreation.dart';
 import 'package:flutter_job_seeking/feature/home_page.dart';
@@ -19,9 +20,10 @@ class CreateAccount extends StatefulWidget {
 class _CreateAccountState extends State<CreateAccount> {
   String _currentSelectedValue="Software Engineer";
   String _qua="BCA";
-  String _exp="0-1";
+  String _exp="1+";
   TextEditingController nameController=TextEditingController();
   TextEditingController collegeController=TextEditingController();
+  TextEditingController companyController=TextEditingController();
   var _pos=["Software Engineer","Backend Developer","Designer","DBA","Data Scientist"];
   var Qua=["BCA","BTECH","Self Taught","Arts","Commerce"];
   var Exp=["0-1","1+","2+","4+","6+"];
@@ -35,6 +37,7 @@ class _CreateAccountState extends State<CreateAccount> {
  }
  String imageUrl="";
  Future _upload() async {
+  DialogHelper.showLoadingDialog();
   print("upload");
   print(_image!.path);
   if(_image!=null){
@@ -45,6 +48,11 @@ class _CreateAccountState extends State<CreateAccount> {
     await referenceUpload.putFile(File(_image!.path));
     _uploadedFileURL=await referenceUpload.getDownloadURL();
     print(_uploadedFileURL);
+   }
+   if(_uploadedFileURL!=null){
+    DialogHelper.showDialog("Image Uploaded Successfully", true);
+   }else{
+    DialogHelper.showDialog("Image Uploading failed", false);
    }
  } 
 
@@ -150,7 +158,6 @@ class _CreateAccountState extends State<CreateAccount> {
                 helperText: "Enter your qualification",
                 fillColor: Theme.of(context).primaryColor.withOpacity(0.1),
                 filled: true,
-                  //labelStyle: textStyle,
                   errorStyle: TextStyle(color: Colors.redAccent, fontSize: 16.0),
                   hintText: 'Qualification',
                   border: OutlineInputBorder(
@@ -200,7 +207,7 @@ class _CreateAccountState extends State<CreateAccount> {
                   isDense: true,
                   onChanged: (newValue) {
                     setState(() {
-                      _currentSelectedValue = newValue.toString();
+                      _exp = newValue.toString();
                       state.didChange(newValue);
                     });
                   },
@@ -225,7 +232,21 @@ class _CreateAccountState extends State<CreateAccount> {
                     borderSide: BorderSide.none),
                 fillColor: Theme.of(context).primaryColor.withOpacity(0.1),
                 filled: true,
-                prefixIcon: Icon(Icons.person),
+                prefixIcon: Icon(Icons.school),
+              ),
+              obscureText: true,
+            ),
+            TextField(
+              controller: companyController,
+              decoration: InputDecoration(
+                helperText: "Enter your company name with  domain name",
+                hintText: "Company (xyz.com)",
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(18),
+                    borderSide: BorderSide.none),
+                fillColor: Theme.of(context).primaryColor.withOpacity(0.1),
+                filled: true,
+                prefixIcon: Icon(Icons.branding_watermark_rounded),
               ),
               obscureText: true,
             ),
@@ -250,8 +271,9 @@ class _CreateAccountState extends State<CreateAccount> {
                keyboardType: TextInputType.text,
              ),
              ),
-//SizedBox(height: 20),
- TextButton(child: Row(
+SizedBox(height: 20),
+ TextButton(
+  child: Row(
   mainAxisAlignment: MainAxisAlignment.center,
   children: [
   Icon(Icons.camera),Text(" Upload your Profile image")
@@ -261,12 +283,14 @@ class _CreateAccountState extends State<CreateAccount> {
  }),),
             TextButton(
               onPressed: () {}, child: GestureDetector(
-              onTap:(() {
-                ProfileRepo().CreateProfile(pos:_currentSelectedValue,name: nameController.text, qualification: _qua, college: collegeController.text, experience: _exp,image: _uploadedFileURL,skills: _myListCustom);
-              Navigator.push(  
+              onTap:(() async {
+                await ProfileRepo().CreateProfile(
+                  company: companyController.text,pos:_currentSelectedValue,name: nameController.text, qualification: _qua, college: collegeController.text, experience: _exp,image: _uploadedFileURL,skills: _myListCustom).whenComplete(() {
+                     Navigator.push(  
                   context,  
                   MaterialPageRoute(builder: (context) => 
                   HomePage())); 
+                  });
               } 
                 ),child: Text("Save")))
           ],),

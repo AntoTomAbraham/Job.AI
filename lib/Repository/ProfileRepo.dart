@@ -4,7 +4,7 @@ import 'package:flutter_job_seeking/Helper/DialogHelper.dart';
 import 'package:flutter_job_seeking/Models/UserModel.dart';
 
 class ProfileRepo{
-  Future CreateProfile({required String pos,required String name,required String qualification,required String college,required String experience,required List<dynamic> skills,required String image}) async {
+  Future CreateProfile({required String pos,required String company,required String name,required String qualification,required String college,required String experience,required List<dynamic> skills,required String image}) async {
     final docUser=FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid);
     final json= {
       'name':name,
@@ -12,6 +12,7 @@ class ProfileRepo{
       'college': college,
       'experience': experience,
       'skills':skills,
+      'company': company,
       'profile': image,
       'position':pos,
       'isAvailable':true,
