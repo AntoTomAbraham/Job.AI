@@ -10,6 +10,7 @@ import 'package:flutter_job_seeking/Helper/DialogHelper.dart';
 import 'package:flutter_job_seeking/Repository/ProfileRepo.dart';
 import 'package:flutter_job_seeking/feature/Authentication/CreateAccount.dart';
 import 'package:flutter_job_seeking/feature/Authentication/LoginPage.dart';
+import 'package:flutter_job_seeking/feature/Job/GetSimilarity.dart';
 import 'package:flutter_job_seeking/feature/Profile/ResumeViewer.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -173,6 +174,9 @@ if (result != null) {
                                 await _upload();
                                 await ProfileRepo().uploadResume(resume: _uploadedFileURL);
                                 DialogHelper.showDialog("Resume Updated", true);
+                              }else{
+                                Navigator.push(
+                                    context, MaterialPageRoute(builder: (BuildContext context) => GetSimilarity(resume:res,desc: pos,)));
                               }
                             },
                             style: ElevatedButton.styleFrom(
@@ -261,11 +265,11 @@ List<ProfileCompletionCard> profileCompletionCards = [
     icon: CupertinoIcons.doc,
     buttonText: "Upload",
   ),
-  // ProfileCompletionCard(
-  //   title: "Add your skills",
-  //   icon: CupertinoIcons.square_list,
-  //   buttonText: "Add",
-  // ),
+  ProfileCompletionCard(
+    title: "Analyse Your resume",
+    icon: CupertinoIcons.square_list,
+    buttonText: "Start",
+  ),
 ];
 
 class CustomListTile {

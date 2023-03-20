@@ -46,6 +46,16 @@ dependencies:
   d_chart: ^2.0.2
   timeline_tile: ^2.0.0
   flutter_webrtc: ^0.9.23
+  device_info_plus: ^8.1.0
+  firebase_messaging: ^14.2.6
+  flutter_local_notifications: ^13.0.0
+  encrypt: ^5.0.1
+  pdf_text: ^0.5.0
+  lottie: ^2.3.0
+  csv: ^5.0.1
+  path_provider: ^2.0.13
+
+
 
 
   # The following adds the Cupertino Icons font to your application.

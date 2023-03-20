@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_job_seeking/core/theme/app_color.dart';
+import 'package:flutter_job_seeking/feature/JobNews/Jobnews.dart';
 
 class TipsWidget extends StatefulWidget {
   const TipsWidget({super.key});
@@ -119,7 +120,13 @@ class _TipsWidgetState extends State<TipsWidget> {
                               ),
                         ),
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                             Navigator.push(  
+                          context,  
+                          MaterialPageRoute(builder: (context) => 
+                          JobNews())
+                          ); 
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
                           ),

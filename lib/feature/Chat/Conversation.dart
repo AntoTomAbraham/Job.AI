@@ -1,6 +1,6 @@
 //import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:math';
-
+//import 'package:flutter_string_encryption/flutter_string_encryption.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +8,7 @@ import 'package:flutter_job_seeking/Models/Messages.dart';
 import 'package:flutter_job_seeking/Models/message_model.dart';
 import 'package:flutter_job_seeking/Models/user_model.dart';
 import 'package:flutter_job_seeking/Repository/ChatRepo.dart';
+import 'package:flutter_job_seeking/Repository/Myencryption.dart';
 import 'package:flutter_job_seeking/feature/VideoCall/VideoCall.dart';
 import 'package:get/get.dart';
 
@@ -25,11 +26,17 @@ class Conversation extends StatefulWidget {
 class _ConversationState extends State<Conversation> {
 
   final TextEditingController controller=TextEditingController();
+  //final cryptor = new PlatformStringCryptor();
+ 
 
   sendMessage() async {
     print("inside func 1");
     print(controller.text);
+    // final String salt = await cryptor.generateSalt();
+    // final String key = await cryptor.generateKeyFromPassword("JOBAI", salt);
+    // final String encrypted = await cryptor.encrypt(controller.text, key);
     if(controller.text.isNotEmpty){
+      String mess=MyEncryptionDecryption.encryptAES(controller.text);
       print("is not empty");
     Map<String,dynamic> messageMap ={
       "message":controller.text,
@@ -320,9 +327,11 @@ class _ConversationState extends State<Conversation> {
                   
                     controller: scrollcontroller,
                     itemCount: snapshot.data!.docs.length,
-                    itemBuilder: (context, index) {
+                    itemBuilder: (context, index)  {
                       String textmessage=snapshot.data!.docs[index].data()['message'];
                       String send=snapshot.data!.docs[index].data()['sendby'];
+                      // final String key =cryptor.generateKeyFromPassword("JOBAI", salt);
+                      // String decrypt=async cryptor.decrypt(textmessage,key);
                       return _chatBubble(textmessage.toString(), send==FirebaseAuth.instance.currentUser!.uid,true);
                     },
                    ),

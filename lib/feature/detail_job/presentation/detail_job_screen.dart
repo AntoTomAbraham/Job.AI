@@ -11,6 +11,7 @@ import 'package:flutter_job_seeking/Repository/JobRepo.dart';
 import 'package:flutter_job_seeking/Repository/ProfileRepo.dart';
 import 'package:flutter_job_seeking/core/theme/app_color.dart';
 import 'package:flutter_job_seeking/feature/Chat/Conversation.dart';
+import 'package:flutter_job_seeking/feature/Job/Viewapplicants.dart';
 import 'package:flutter_job_seeking/feature/home/model/job.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -402,7 +403,12 @@ class _DetailJobScreenState extends State<DetailJobScreen> {
               width: MediaQuery.of(context).size.width,
               height: 56,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                   Navigator.push(  
+                  context,  
+                  MaterialPageRoute(builder: (context) => Viewapplicants(jobID: widget.jobID)
+                  ));
+                },
                 style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),

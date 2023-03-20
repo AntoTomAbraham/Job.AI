@@ -18,15 +18,27 @@ class jobAnalytics extends StatefulWidget {
 class _jobAnalyticsState extends State<jobAnalytics> {
   //List count=[];
   int len=0;
+  int totalApp=0;
   int applLen=0;
   Future getInsight() async {
-
+    print("Getting Insights");
+    //Total Views
    await FirebaseFirestore.instance.collection('Job').doc(widget.JobID)
     .get().then((value) async {
       if(value.exists){
         setState(() {
           len=value.data()!['view'];
         });
+      }
+    });
+
+  //Total Application
+  await FirebaseFirestore.instance.collection('Apply').doc().get().then((value) async {
+      print("Getting job appp");
+      if(value.exists && value.data()!['jobID']==widget.JobID){
+        print('Found');
+        totalApp+=1;
+        setState(() {});
       }
     });
     }
@@ -64,7 +76,7 @@ class _jobAnalyticsState extends State<jobAnalytics> {
                 ),
                 Column(
                   children: [
-                    Text(applLen.toString(),style: GoogleFonts.poppins(fontSize: 28),),
+                    Text(totalApp.toString(),style: GoogleFonts.poppins(fontSize: 28),),
                     Text('Total application',style: GoogleFonts.poppins(fontSize: 12),),
                   ],
                 ),

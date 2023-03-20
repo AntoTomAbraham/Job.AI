@@ -61,4 +61,6 @@ class JobRepo{
     return FirebaseFirestore.instance.collection('Job').where('Jobtitle',isGreaterThanOrEqualTo: queryString).get();
   }
 
+  static findSimilarity() async{}
+
 }
