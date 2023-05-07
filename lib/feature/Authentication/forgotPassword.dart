@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_job_seeking/Repository/AuthRepo.dart';
+import 'package:flutter_job_seeking/Repository/ToastRepo.dart';
 
 class ForgotPassword extends StatelessWidget {
   //const ForgotPassword({super.key});
@@ -32,8 +33,11 @@ class ForgotPassword extends StatelessWidget {
               SizedBox(height: 20),
               ElevatedButton(
             onPressed: ()async {
+              if(emailController.text!=null){
               AuthRepo().sendPasswordResetEmail(emailController.text);        
-            },
+            }else{
+              ToastRepo.sendToast("Please Enter all the fields");
+            }},
             child: Padding(
               padding: const EdgeInsets.all(4.0),
               child: Text(

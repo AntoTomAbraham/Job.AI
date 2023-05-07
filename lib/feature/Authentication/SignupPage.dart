@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_job_seeking/Repository/AuthRepo.dart';
+import 'package:flutter_job_seeking/Repository/ToastRepo.dart';
 import 'package:flutter_job_seeking/feature/Authentication/CreateAccount.dart';
 import 'package:flutter_job_seeking/feature/Authentication/LoginPage.dart';
 import 'package:flutter_job_seeking/feature/home_page.dart';
@@ -12,16 +13,20 @@ class SignupPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Container(
-          margin: EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _header(context),
-              _inputField(context),
-              _forgotPassword(context),
-              _signup(context),
-            ],
+        body: SingleChildScrollView(
+          child: Container(
+            margin: EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                SizedBox(height: 20),
+                _header(context),
+                SizedBox(height: 120),
+                _inputField(context),
+                _forgotPassword(context),
+                _signup(context),
+              ],
+            ),
           ),
         ),
       ),
@@ -72,6 +77,9 @@ class SignupPage extends StatelessWidget {
         SizedBox(height: 10),
         ElevatedButton(
           onPressed: () async {
+            if(pass.text.length<6){
+              ToastRepo.sendToast("Password should contain atleast 6 characters");
+            }else if(email.text!=null && pass.text!=null){
           bool user= await AuthRepo().emailSignup(email.text, pass.text);
           if(user==false){
             print("error");
@@ -81,6 +89,9 @@ class SignupPage extends StatelessWidget {
               MaterialPageRoute(builder: (context) => CreateAccount()),  
             );
           }  
+            }else{
+              ToastRepo.sendToast("Please Enter all the fields");
+            }
           },
           child: Text(
             "Signup",
@@ -91,7 +102,46 @@ class SignupPage extends StatelessWidget {
             padding: EdgeInsets.symmetric(vertical: 16),
           ),
         ),
-
+        SizedBox(height: 10),
+          ElevatedButton(
+          onPressed: () async {
+          //  Future<bool> user=FirebaseAuth.instance.
+          bool user=await AuthRepo().googleSignup();
+          if(user==false){
+            print("error");
+          }else{
+             Navigator.push(  
+              context,  
+              MaterialPageRoute(builder: (context) => CreateAccount()),  
+            );
+          }  
+          },
+          child: Center(
+            child: Container(
+              color: Colors.white,
+              child: Row(mainAxisAlignment: MainAxisAlignment.center, 
+                children: [
+                  Image.network(height: 40,width:40,
+              'http://pngimg.com/uploads/google/google_PNG19635.png',
+              fit:BoxFit.cover
+            ), const SizedBox(
+        width: 5.0,
+      ),
+                  const Text(
+                    "Google Signin",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            shadowColor: Colors.white60,
+            shape: StadiumBorder(),
+            padding: EdgeInsets.symmetric(vertical: 16),
+          ),
+        )
         
       ],
     );

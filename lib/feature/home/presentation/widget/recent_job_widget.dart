@@ -1,7 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_job_seeking/Models/message_model.dart';
+import 'package:flutter_job_seeking/Repository/ChatRepo.dart';
 import 'package:flutter_job_seeking/Repository/JobRepo.dart';
 import 'package:flutter_job_seeking/core/route/app_route_name.dart';
+import 'package:flutter_job_seeking/feature/Chat/Conversation.dart';
 import 'package:flutter_job_seeking/feature/detail_job/presentation/detail_job_screen.dart';
 import 'package:flutter_job_seeking/feature/home/model/job.dart';
 import 'package:get/get.dart';
@@ -14,7 +18,7 @@ class RecentJobWidget extends StatelessWidget {
     return Container(
       height: Get.height*.3,
       child: StreamBuilder(
-         stream: FirebaseFirestore.instance.collection('Job').snapshots(),
+         stream: FirebaseFirestore.instance.collection('Job').where('isOpen',isEqualTo: true).snapshots(),
     builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
       if(snapshot.hasError){
         return Text("Some error occured");
@@ -22,7 +26,7 @@ class RecentJobWidget extends StatelessWidget {
         return Center(child: CircularProgressIndicator());
       }else if(snapshot.hasData){
         return ListView(children: snapshot.data!.docs.map((e) {
-          return InkWell(
+         return InkWell(
           onTap: () {
             //JobRepo.addAnalytics(jobID: 'S4VyrnXYe8X9ywM2888b');
             JobRepo.addInsights(jobID: e['jobID']);
@@ -93,7 +97,19 @@ class RecentJobWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.bookmark_border_rounded),
+                    GestureDetector(
+                      onTap: () {
+                         List<String> users=[e['uid'],FirebaseAuth.instance.currentUser!.uid];
+                    String chatRoomID=getChatRoomID(e['uid'], FirebaseAuth.instance.currentUser!.uid);
+                    Map<String,dynamic> chatRoomMap={
+                      "users":users,
+                      "chatRoomID":chatRoomID
+                    };
+                    ChatRepo.createConversation(chatRoomID, chatRoomMap);
+                     final Message chat = chats[0];
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>Conversation(chatRoomID: chatRoomID,chatWith: e['uid'])));
+                      },
+                      child: Icon(Icons.message)),
                     Text(
                       " ",
                       //e['jobID'],
@@ -113,4 +129,11 @@ class RecentJobWidget extends StatelessWidget {
       ),
     );
    }
+   getChatRoomID(String a,String b){
+    if(a.substring(0,1).codeUnitAt(0)>b.substring(0,1).codeUnitAt(0)){
+      return "$a\_$b";
+    }else{
+      return "$b\_$a";
+    }
+  }
 }

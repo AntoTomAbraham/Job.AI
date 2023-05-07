@@ -16,9 +16,9 @@ class TipsWidget extends StatefulWidget {
 class _TipsWidgetState extends State<TipsWidget> {
   var selectedIndex = 0;
   final tips = [
-    "How to create a perfect CV for you",
-    "How to see a suitable Job for you",
-    "How to create a greate Portofolio",
+    "Get All Your Latest Tech News Here!",
+    "Get All Your Latest Tech News Here!",
+    "Get All Your Latest Tech News Here!",
   ];
 
   @override
@@ -35,7 +35,7 @@ class _TipsWidgetState extends State<TipsWidget> {
     //     });
     //   },
     // );
-    super.initState();
+    // super.initState();
   }
 
   @override

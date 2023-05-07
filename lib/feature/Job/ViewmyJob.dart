@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
@@ -39,7 +40,7 @@ class _ViewmyJobState extends State<ViewmyJob> {
       child: Container(
         height: MediaQuery.of(context).size.height*1,
        child: StreamBuilder(
-    stream: FirebaseFirestore.instance.collection('Job').snapshots(),
+    stream: FirebaseFirestore.instance.collection('Job').where('uid',isEqualTo: FirebaseAuth.instance.currentUser!.uid).snapshots(),
     builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
       if(!snapshot.hasData){
         return Center(
@@ -65,6 +66,36 @@ class _ViewmyJobState extends State<ViewmyJob> {
                 //leading: Image.network(logo.toString()),
                 title:Text(document['Jobtitle']),
                 isThreeLine: true,
+                onLongPress: () {
+                  showDialog(
+  context: context,
+  builder: (BuildContext context) {
+    return AlertDialog(
+      title: Text('Are you sure you want to stop hiring ?'),
+      //content: Text('Dialog Message'),
+      actions: [
+        TextButton(
+          onPressed: ()async {
+            final documentReference = FirebaseFirestore.instance.collection('Job').doc(document['jobID']);
+            await documentReference.update({'isOpen': false});
+            // Perform action when "Cancel" button is pressed
+            Navigator.of(context).pop();
+          },
+          child: Text('YES'),
+        ),
+        TextButton(
+          onPressed: () {
+            // Perform action when "OK" button is pressed
+            Navigator.of(context).pop();
+          },
+          child: Text('NO'),
+        ),
+      ],
+    );
+  },
+);
+
+                },
                 subtitle: Text('JOBID: '+document['jobID']),
                 trailing: Container(
                   width: 83,

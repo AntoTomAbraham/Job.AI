@@ -15,6 +15,7 @@ class ProfileRepo{
       'company': company,
       'profile': image,
       'position':pos,
+      "resume":"",
       'isAvailable':true,
       'id':FirebaseAuth.instance.currentUser!.uid,
     };

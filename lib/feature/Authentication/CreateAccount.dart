@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chip_tags/flutter_chip_tags.dart';
 import 'package:flutter_job_seeking/Helper/DialogHelper.dart';
 import 'package:flutter_job_seeking/Repository/ProfileRepo.dart';
+import 'package:flutter_job_seeking/Repository/ToastRepo.dart';
 //import 'package:flutter_job_seeking/feature/Authentication/HRaccountCreation.dart';
 import 'package:flutter_job_seeking/feature/home_page.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -69,11 +70,9 @@ class _CreateAccountState extends State<CreateAccount> {
       body: 
     SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.only(left:8.0,right:8),
+        padding: const EdgeInsets.only(left:21.0,right:21),
         child: Container(
-          height: MediaQuery.of(context).size.height*1+50  ,
-          child: Padding(
-          padding: const EdgeInsets.only(left:8.0,right:8),
+          height: MediaQuery.of(context).size.height*1+150,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -234,7 +233,7 @@ class _CreateAccountState extends State<CreateAccount> {
                 filled: true,
                 prefixIcon: Icon(Icons.school),
               ),
-              obscureText: true,
+              //obscureText: true,
             ),
             TextField(
               controller: companyController,
@@ -248,9 +247,10 @@ class _CreateAccountState extends State<CreateAccount> {
                 filled: true,
                 prefixIcon: Icon(Icons.branding_watermark_rounded),
               ),
-              obscureText: true,
+              //obscureText: true,
             ),
-             Expanded(
+             Container(
+              height: 150,
                child: ChipTags(
                list: _myListCustom,
                chipColor: Colors.black,
@@ -284,6 +284,7 @@ SizedBox(height: 20),
             TextButton(
               onPressed: () {}, child: GestureDetector(
               onTap:(() async {
+                if(companyController.text!=null && _currentSelectedValue !=null&& nameController.text!=null && _qua!=null && collegeController.text!=null && _exp!=null&& _uploadedFileURL!=null){
                 await ProfileRepo().CreateProfile(
                   company: companyController.text,pos:_currentSelectedValue,name: nameController.text, qualification: _qua, college: collegeController.text, experience: _exp,image: _uploadedFileURL,skills: _myListCustom).whenComplete(() {
                      Navigator.push(  
@@ -291,10 +292,11 @@ SizedBox(height: 20),
                   MaterialPageRoute(builder: (context) => 
                   HomePage())); 
                   });
-              } 
+              }else{
+                ToastRepo.sendToast("Please Enter all the fields");
+              } }
                 ),child: Text("Save")))
-          ],),
-        ),),
+          ],),),
       ),
     ),);
   }

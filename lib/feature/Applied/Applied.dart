@@ -8,10 +8,34 @@ import 'package:flutter_job_seeking/Repository/JobRepo.dart';
 import 'package:flutter_job_seeking/feature/Job/PostJob.dart';
 import 'package:flutter_job_seeking/feature/Job/ViewmyJob.dart';
 import 'package:flutter_job_seeking/feature/detail_job/presentation/detail_job_screen.dart';
+import 'package:get/get.dart';
 
-class Applied extends StatelessWidget {
+class Applied extends StatefulWidget {
   const Applied({super.key});
 
+  @override
+  State<Applied> createState() => _AppliedState();
+}
+
+class _AppliedState extends State<Applied> {
+  int totalJOb=0;
+  int totalhire=0;
+  Future findJobs() async {
+  final query=await FirebaseFirestore.instance.collection('Job').where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid).get();
+  totalJOb=query.size;
+
+  final queryy=await FirebaseFirestore.instance.collection('Job')
+  .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+  .get();
+  totalhire=queryy.size;
+  setState(() {});
+  }
+  @override
+  void initState() {
+    findJobs();
+    // TODO: implement initState
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,7 +67,9 @@ class Applied extends StatelessWidget {
                           PostJob())); 
                 },
                 ),
-                Container(height: 400,
+                ListTile(title:Text(totalJOb.toString()),subtitle: Text("No of Jobs Posted"),),
+                // ListTile(title:Text(totalhire.toString()),subtitle: Text("No of candidates hired"),),
+                Container(height: 400-90+70,
                   child: StreamBuilder(
                     stream: FirebaseFirestore.instance.collection('Apply').where('uid',isEqualTo: FirebaseAuth.instance.currentUser!.uid).snapshots(),
                         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
@@ -60,7 +86,10 @@ class Applied extends StatelessWidget {
                         context, MaterialPageRoute(builder: (BuildContext context) => DetailJobScreen(jobID: 'S4VyrnXYe8X9ywM2888b') ));
           },
           child: StreamBuilder(
-            stream: FirebaseFirestore.instance.collection('Job').where('jobID',isEqualTo:e['jobID'] ).snapshots(),
+            stream: FirebaseFirestore.instance.collection('Job')
+            .where('jobID',isEqualTo:e['jobID'] )
+            .where('isOpen',isEqualTo: true)
+            .snapshots(),
           builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
             if(snapshot.connectionState==ConnectionState.waiting){
               return Container();
@@ -68,6 +97,7 @@ class Applied extends StatelessWidget {
               return  Container();
             }else{
               return ListTile(
+                //enabled: snapshot.data!.docs.single.get('isOpen'),
                 leading: snapshot.data!.docs.single.get('company').isNotEmpty ? FadeInImage(
                         placeholder: NetworkImage('https://logo.clearbit.com/${snapshot.data!.docs.single.get('company')}'), 
                         image:   NetworkImage('https://logo.clearbit.com/${snapshot.data!.docs.single.get('company')}'),

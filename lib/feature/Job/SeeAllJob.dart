@@ -19,7 +19,7 @@ class SeeAllJob extends StatelessWidget {
         child: Container(
           height: MediaQuery.of(context).size.height*1,
          child:StreamBuilder(
-           stream: FirebaseFirestore.instance.collection('Job').snapshots(),
+           stream: FirebaseFirestore.instance.collection('Job').where('isOpen',isEqualTo: true).snapshots(),
     builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
         if(snapshot.hasError){
           return Text("Some error occured");

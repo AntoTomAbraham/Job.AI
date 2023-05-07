@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_job_seeking/Repository/AuthRepo.dart';
+import 'package:flutter_job_seeking/Repository/ToastRepo.dart';
 import 'package:flutter_job_seeking/feature/Authentication/SignupPage.dart';
 import 'package:flutter_job_seeking/feature/Authentication/forgotPassword.dart';
 import 'package:flutter_job_seeking/feature/home_page.dart';
@@ -75,6 +76,7 @@ class LoginPage extends StatelessWidget {
         SizedBox(height: 30),
         ElevatedButton(
           onPressed: ()async {
+            if(email.text!=null && pass.text!=null){
           bool user= await AuthRepo().emailSignin(email.text, pass.text);
           if(user==false){
             print("error");
@@ -83,7 +85,10 @@ class LoginPage extends StatelessWidget {
               context,  
               MaterialPageRoute(builder: (context) => HomePage()),  
             );
-          }  
+          } 
+            }else{
+              ToastRepo.sendToast("Please Enter all the fields");
+            }
           },
           child: Text(
             "Login",

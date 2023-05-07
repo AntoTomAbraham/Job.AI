@@ -10,6 +10,7 @@ import 'package:flutter_job_seeking/Repository/ChatRepo.dart';
 import 'package:flutter_job_seeking/Repository/JobRepo.dart';
 import 'package:flutter_job_seeking/Repository/ProfileRepo.dart';
 import 'package:flutter_job_seeking/core/theme/app_color.dart';
+import 'package:flutter_job_seeking/feature/Apply/jobApply.dart';
 import 'package:flutter_job_seeking/feature/Chat/Conversation.dart';
 import 'package:flutter_job_seeking/feature/Job/Viewapplicants.dart';
 import 'package:flutter_job_seeking/feature/home/model/job.dart';
@@ -40,6 +41,7 @@ class _DetailJobScreenState extends State<DetailJobScreen> {
   List<dynamic> req=[];
   String uid="";
   String data="";
+  bool len=false;
   Future getJobData() async {
     print("jobData called");
     await FirebaseFirestore.instance.collection('Job').doc(widget.jobID)
@@ -61,6 +63,12 @@ class _DetailJobScreenState extends State<DetailJobScreen> {
       print("this is re"+ jobPosition);
     }
  });
+ final querySnapshot =await FirebaseFirestore.instance.collection('Apply')
+ .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+ .where('jobID',isEqualTo: widget.jobID)
+ .get() as QuerySnapshot; 
+  len=querySnapshot.docs.isEmpty;
+  print(len.toString()+"this is apply status");
  final docUser=await FirebaseFirestore.instance.collection('users').doc(uid).get().then((val){return val.data()!['name'];});
  setState(() {
   data=docUser;
@@ -74,6 +82,7 @@ class _DetailJobScreenState extends State<DetailJobScreen> {
     // TODO: implement initState
     super.initState();
     getJobData();
+    print(len);
   }
 
   @override
@@ -422,12 +431,13 @@ class _DetailJobScreenState extends State<DetailJobScreen> {
                 ),
               ),
             ):
-            SizedBox(
+            len? SizedBox(
               width: MediaQuery.of(context).size.width,
               height: 56,
               child: ElevatedButton(
                 onPressed: () {
-                  ApplicationRepo.apply(jobID: widget.jobID , coverLetter: "sklkfj");
+                   Navigator.push(context, MaterialPageRoute(builder: (context)=> JobApply(jobID:widget.jobID ,)));
+                  //ApplicationRepo.apply(jobID: widget.jobID , coverLetter: "sklkfj");
                 },
                 style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
@@ -435,6 +445,25 @@ class _DetailJobScreenState extends State<DetailJobScreen> {
                 )),
                 child: Text(
                   "Apply Now",
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyLarge
+                      ?.copyWith(color: Colors.white),
+                ),
+              ),
+            ): SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: 56,
+              child: ElevatedButton(
+                onPressed: () {
+                  //ApplicationRepo.apply(jobID: widget.jobID , coverLetter: "sklkfj");
+                },
+                style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                )),
+                child: Text(
+                  "Already Applied",
                   style: Theme.of(context)
                       .textTheme
                       .bodyLarge

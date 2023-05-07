@@ -1,7 +1,11 @@
 import 'dart:io';
+import 'package:flutter_job_seeking/feature/Applied/ApplicantProfile.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:csv/csv.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:path/path.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -35,7 +39,10 @@ class _ViewapplicantsState extends State<Viewapplicants> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(child: Icon(Icons.file_download),onPressed: (){getCSV();}),
+      floatingActionButton: FloatingActionButton(child: Icon(Icons.file_download),
+      onPressed: (){
+        getCSV();
+        }),
       appBar: 
     AppBar(backgroundColor: Colors.white,elevation: 0,title: Text("View Applicants"),),
       body: SingleChildScrollView(
@@ -70,6 +77,9 @@ class _ViewapplicantsState extends State<Viewapplicants> {
                 snapshot.data!.docs.single.get('position'),
                 snapshot.data!.docs.single.get('resume')]);
               return ListTile(
+                onLongPress: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=> ApplicantProfile(applicantID: e['uid'])));
+                },
                 onTap: () {
                    List<String> users=[e['uid'],FirebaseAuth.instance.currentUser!.uid];
                     String chatRoomID=getChatRoomID(e['uid'], FirebaseAuth.instance.currentUser!.uid);
@@ -115,21 +125,24 @@ class _ViewapplicantsState extends State<Viewapplicants> {
   getCSV() async {
     String csvData=const ListToCsvConverter().convert(items);
     print(csvData);
-    // Directory generalDownloadDir=Directory('storage/emulated/0/Download');
-    // final File file=await (File('${generalDownloadDir.path}/item_export${DateTime.now()}.csv').create());
-    // await file.writeAsString(csvData);
-
-    // final directory = (await getExternalStorageDirectories(type: StorageDirectory.downloads))!.first;
-    // final File file2 = await File("${directory.path}/${DateTime.now()}.csv").create();
-    // print(file2);
-    // print("Saving");
-    // await file2.writeAsString(csvData);
     try {
-    final String directory = (await getApplicationSupportDirectory()).path;
+       var status = await Permission.storage.status;
+    if (!status.isGranted) {
+      await Permission.storage.request();
+    }
+    final String directory = (await getApplicationDocumentsDirectory()).path;
     final String path = "$directory/JOBai-${DateTime.now()}.csv";
     final File file = File(path);
-    await file.writeAsString(csvData);
-    return path;
+    dynamic data=await file.writeAsString(csvData);
+    print(data); 
+    print(path); 
+    await OpenFilex.open(file.path);
+    //return path;
+   
+    // final directory = (await getExternalStorageDirectories(type: StorageDirectory.downloads))!.first;
+    // File file2 = File("${directory.path}/test.csv");
+    // await file2.writeAsString(csvData);
+    // print(file2);
      } catch (e) {
       print(e);
     }

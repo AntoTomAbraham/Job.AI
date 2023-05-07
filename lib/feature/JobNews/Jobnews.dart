@@ -14,8 +14,10 @@ class JobNews extends StatefulWidget {
 
 class _JobNewsState extends State<JobNews> {
   List data=[];
+  //paste your api key here
+  string apiKey="";
   Future<dynamic> _getData() async{
-    final res=await http.get(Uri.parse('https://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey=18e5ccfe5bb947f5bb7673dfb8289b88'));
+    final res=await http.get(Uri.parse('https://newsapi.org/v2/top-headlines?sources=techcrunch&apiKey=${apiKey}'));
     Map result=jsonDecode(res.body);
     print("fetched");
     print(res.statusCode);

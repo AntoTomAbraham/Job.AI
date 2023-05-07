@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chip_tags/flutter_chip_tags.dart';
 import 'package:flutter_job_seeking/Repository/JobRepo.dart';
+import 'package:flutter_job_seeking/Repository/ToastRepo.dart';
 import 'package:flutter_job_seeking/feature/home_page.dart';
 
 class PostJob extends StatefulWidget {
@@ -240,12 +241,15 @@ class _PostJobState extends State<PostJob> {
 ),
  SizedBox(height: 10),
 TextButton(onPressed: (){
+  if(companyName.text!=null&&nameController.text!=null&&_jobType!=null&&jobID.text!=null&&desc.text!=null&&_workPlace!=null&&salaryController.text!=null&&loc.text!=null&&_myListCustom.length!=0){
   JobRepo.CreateJOB(company: companyName.text,pos: nameController.text,jobtype: _jobType,jobID: jobID.text, desc: desc.text, workPlaceType: _workPlace, salary: salaryController.text, jobLocation: loc.text,requirements: _myListCustom);
   Navigator.push(  
                   context,  
                   MaterialPageRoute(builder: (context) => 
                   HomePage()));
-}, child: Text("Submit"))
+  }else{
+    ToastRepo.sendToast("Please Enter all the fields");
+  }}, child: Text("Submit"))
           ],),
         ),
       ),

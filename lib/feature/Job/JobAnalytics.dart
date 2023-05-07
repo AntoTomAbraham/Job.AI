@@ -33,14 +33,17 @@ class _jobAnalyticsState extends State<jobAnalytics> {
     });
 
   //Total Application
-  await FirebaseFirestore.instance.collection('Apply').doc().get().then((value) async {
-      print("Getting job appp");
-      if(value.exists && value.data()!['jobID']==widget.JobID){
-        print('Found');
-        totalApp+=1;
-        setState(() {});
-      }
-    });
+  final query=await FirebaseFirestore.instance.collection('Apply').where('jobID', isEqualTo: widget.JobID).get();
+  totalApp=query.size;
+  setState(() {});
+  // await FirebaseFirestore.instance.collection('Apply').doc().get().then((value) async {
+  //     print("Getting job appp");
+  //     if(value.exists && value.data()!['jobID']==widget.JobID){
+  //       print('Found');
+  //       totalApp+=1;
+  //       setState(() {});
+  //     }
+  //   });
     }
 
   @override
@@ -102,7 +105,11 @@ class _jobAnalyticsState extends State<jobAnalytics> {
                       ),
                     ),
                     StreamBuilder(
-                      stream: FirebaseFirestore.instance.collection('Job').doc(widget.JobID).collection('Insights').snapshots(),
+                      stream: FirebaseFirestore.instance.collection('Job')
+                      .doc(widget.JobID)
+                      .collection('Insights')
+                      //.where(int.parse('Date'.split('-')[1]),isEqualTo: DateTime.now().month)
+                      .snapshots(),
                       builder: (context,AsyncSnapshot<QuerySnapshot<Map<String,dynamic>>> snapshot) {
                         if(snapshot.hasError){
                           return Text("SOme error");
@@ -113,13 +120,17 @@ class _jobAnalyticsState extends State<jobAnalytics> {
                         if(!snapshot.hasData){
                           return Text("Null");
                         }
-                        List list=snapshot.data!.docs.map((e){
+                        //if(int.parse(e.data()['Date'].toString().split('-')[1])==DateTime.now().month){
+                        List list=snapshot.data!.docs.map((e){     
+                     
                           print(DateTime.now().toString().split('-')[1]);
                           return {
                             'domain':e.data()['Date'].toString().split('-')[0],
                             'measure':e.data()['count'],
                           };
-                        }).toList();
+                        }
+                        ).toList();
+                        
                         print(list);
                         return 
                         //AspectRatio(
@@ -163,7 +174,7 @@ class _jobAnalyticsState extends State<jobAnalytics> {
                 height: Get.height*.17,
                  child: DChartPie(
                  data: [
-                     {'domain': 'Applied', 'measure': applLen},
+                     {'domain': 'Applied', 'measure': totalApp},
                      {'domain': 'Views', 'measure': len},
                  ],
                  fillColor: (pieData, index) => AppColor.primaryColor,
